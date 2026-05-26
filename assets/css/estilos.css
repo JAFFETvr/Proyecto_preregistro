@@ -1,0 +1,321 @@
+/*.loader{
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}*/
+body{
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+.loader {
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: url('../loading2.gif') 50% 50% no-repeat rgb(249,249,249);
+  opacity: .8;
+}
+
+.loader > img{
+  width: 100px;
+}
+
+.btn-success {
+	background: #2967B2 !important;
+	border: 2px solid #2967B2 !important;
+}
+
+.btn-success:hover {
+	font-weight: bold;
+	color: #2967B2 !important;
+	background: #FFFFFF !important;
+	border: 2px solid #2967B2 !important;
+}
+
+.btn-success:focus {
+	box-shadow: none !important;
+}
+
+.btn-primary {
+  background: #1DA540 !important;
+  border: 2px solid #1DA540 !important;
+}
+
+.btn-primary:hover {
+  /*font-weight: bold;*/
+  color: #1DA540 !important;
+  background: #FFFFFF !important;
+  border: 2px solid #1DA540 !important;
+}
+
+
+
+
+/*Estilo de menú */
+
+
+ul, ol {
+  list-style:none;
+}
+
+
+
+.nav > li {
+  float:left;
+  cursor: pointer;
+}
+
+.nav li a {
+  background-color:#0c315e;
+  color:rgb(249, 243, 243);
+  text-decoration:none;
+  padding:10px 12px;
+  display:block;
+}
+
+.nav li a:hover {
+  background-color:#90a3e9;
+  color:rgb(255, 255, 255);
+}
+
+.nav li ul {
+  display:none;
+  position:absolute;
+  min-width:140px;
+}
+
+.nav li:hover > ul {
+  display:block;
+}
+
+.nav li ul li {
+  position:relative;
+}
+
+.nav li ul li ul {
+  right:-140px;
+  top:0px;
+}
+
+
+
+
+
+
+.btn-primary:focus {
+  box-shadow: none !important;
+}
+
+.btn-secondary {
+  background: #F39C12 !important;
+  border: 2px solid #F39C12 !important;
+}
+
+.btn-secondary:hover {
+  /*font-weight: bold;*/
+  color: #F39C12 !important;
+  background: #FFFFFF !important;
+  border: 2px solid #F39C12 !important;
+}
+
+.btn-secondary:focus {
+  box-shadow: none !important;
+}
+
+.btn-warning {
+  background: #CB4335 !important;
+  border: 2px solid #CB4335 !important;
+}
+
+.btn-warning:hover {
+  font-weight: bold;
+  color: #CB4335 !important;
+  background: #FFFFFF !important;
+  border: 2px solid #CB4335 !important;
+}
+
+.btn-warning:focus {
+  box-shadow: none !important;
+}
+
+.bg-nav {
+	background: #0c315e !important;
+}
+
+#btnLogout:hover {
+	font-weight: bold;
+	color: #2967B2 !important;
+}
+
+#btn-admin {
+  text-decoration: none;
+  color: black;
+}
+
+#btn-admin:hover {
+  font-weight: bold;
+  color: #2967B2;
+}
+
+/*  Estolos para los tipo de evaluacion */
+
+.cc-selector input{
+    margin:0;padding:0;
+    -webkit-appearance:none;
+       -moz-appearance:none;
+            appearance:none;
+}
+
+.dfa{background-image:url(../eva_ingles.png);}
+.ingles{background-image:url(../eva_ingles.png);}
+.psicologia{background-image:url(../eva_ingles.png);}
+
+.drinkcard-cc{
+    cursor:pointer;
+    background-size:contain;
+    background-repeat:no-repeat;
+    display:inline-block;
+    width:100px;height:70px;
+    -webkit-transition: all 100ms ease-in;
+       -moz-transition: all 100ms ease-in;
+            transition: all 100ms ease-in;
+    -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
+       -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
+            filter: brightness(1.8) grayscale(1) opacity(.7);
+}
+
+.drinkcard-cc:hover{
+    -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+       -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+            filter: brightness(1.2) grayscale(.5) opacity(.9);
+}
+
+.w-5 {
+  width: 5%;
+}
+
+.w-10 {
+    width: 10%;
+}
+
+.w-15 {
+    width: 15%;
+}
+
+.w-20 {
+    width: 20%;
+}
+
+.w-25 {
+    width: 25%;
+}
+
+.w-30 {
+    width: 30%;
+}
+
+.w-40 {
+    width: 40%;
+}
+
+.w-60 {
+    width: 60%;
+}
+
+.w-70 {
+    width: 70%;
+}
+
+.w-80 {
+    width: 80%;
+}
+
+.w-90 {
+    width: 90%;
+}
+
+.nav a {
+  color: #000;
+}
+
+.nav a:hover {
+  color: #2967B2 !important;
+}
+
+.nav a.active:hover {
+  color: #ffffff !important;
+  background: #162DBF;
+}
+
+a.active {
+  background: #2967B2 !important;
+  color: #ffffff !important;
+}
+
+::-moz-selection {
+  background: #2967B2cc;
+}
+
+::selection {
+  background: #2967B2cc;
+  color: #fff;
+}
+
+
+
+#snackbar {
+  visibility: hidden !important; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #333; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; /* Add a z-index if needed */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible !important; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+
