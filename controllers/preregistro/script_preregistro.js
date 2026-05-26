@@ -1,24 +1,14 @@
-'use strict';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Constantes
-// ─────────────────────────────────────────────────────────────────────────────
 const CONTROLLER_URL = (typeof window !== 'undefined' && window.CONTROLLER_URL)
     ? window.CONTROLLER_URL
     : '../../controllers/preregistro/controller_preregistro.php';
-const MAX_MB         = 10;
-const MAX_BYTES      = MAX_MB * 1024 * 1024;
-const TIPOS_VALIDOS  = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
-const EXT_VALIDAS    = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
+const MAX_MB = 10;
+const MAX_BYTES = MAX_MB * 1024 * 1024;
+const EXT_VALIDAS = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
 
-const REGEX_EMAIL   = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-const REGEX_CURP    = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/;
-const REGEX_CED     = /^[0-9]{6,8}$/;
-const REGEX_ACENTO  = /[áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜâêîôûÂÊÎÔÛñÑ]/;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers de UI
-// ─────────────────────────────────────────────────────────────────────────────
+const REGEX_EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+const REGEX_CURP = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/;
+const REGEX_CED = /^[0-9]{6,8}$/;
+const REGEX_ACENTO = /[áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜâêîôûÂÊÎÔÛñÑ]/;
 
 function setError(fieldId, msg) {
     const el = document.getElementById(fieldId);
@@ -46,18 +36,9 @@ function clearError(fieldId) {
 }
 
 function resetValidation() {
-    document.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-        el.classList.remove('is-invalid', 'is-valid');
-    });
-    document.querySelectorAll('.invalid-feedback').forEach(el => {
-        el.textContent = '';
-        el.style.display = 'none';
-    });
+    document.querySelectorAll('.is-invalid, .is-valid').forEach(el => el.classList.remove('is-invalid', 'is-valid'));
+    document.querySelectorAll('.invalid-feedback').forEach(el => { el.textContent = ''; el.style.display = 'none'; });
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Control de visibilidad del campo CURP según nacionalidad
-// ─────────────────────────────────────────────────────────────────────────────
 
 function getNacionalidad() {
     const radio = document.querySelector('input[name="nacionalidad"]:checked');
@@ -65,35 +46,33 @@ function getNacionalidad() {
 }
 
 function toggleCurp() {
-    const nac        = getNacionalidad();
+    const nac = getNacionalidad();
     const bloqueCurp = document.getElementById('bloque-curp');
-    const inputCurp  = document.getElementById('professional_curp');
-    const inputArch  = document.getElementById('archivo_curp');
+    const inputCurp = document.getElementById('professional_curp');
+    const inputArch = document.getElementById('archivo_curp');
 
     if (nac === 'Mexicana') {
-        bloqueCurp.style.display = '';
-        inputCurp.required = true;
-        inputArch.required = true;
+        if(bloqueCurp) bloqueCurp.style.display = '';
+        if(inputCurp) inputCurp.required = true;
+        if(inputArch) inputArch.required = true;
     } else {
-        bloqueCurp.style.display = 'none';
-        inputCurp.required = false;
-        inputArch.required = false;
-        inputCurp.value = '';
+        if(bloqueCurp) bloqueCurp.style.display = 'none';
+        if(inputCurp) {
+            inputCurp.required = false;
+            inputCurp.value = '';
+        }
+        if(inputArch) inputArch.required = false;
         clearError('professional_curp');
         clearError('archivo_curp');
     }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Validación de archivos individuales al seleccionarlos
-// ─────────────────────────────────────────────────────────────────────────────
 
 function validarArchivo(inputId) {
     const input = document.getElementById(inputId);
     if (!input || !input.files.length) return true;
 
     const file = input.files[0];
-    const ext  = file.name.split('.').pop().toLowerCase();
+    const ext = file.name.split('.').pop().toLowerCase();
 
     if (!EXT_VALIDAS.includes(ext)) {
         setError(inputId, 'Solo se aceptan archivos PDF, JPG o PNG.');
@@ -109,17 +88,9 @@ function validarArchivo(inputId) {
     return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Eliminar acentos automáticamente al escribir
-// ─────────────────────────────────────────────────────────────────────────────
-
 function quitarAcentos(str) {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Validación completa del formulario antes de enviar
-// ─────────────────────────────────────────────────────────────────────────────
 
 function validarFormulario() {
     let valido = true;
@@ -127,7 +98,6 @@ function validarFormulario() {
 
     const hoy = new Date().toISOString().split('T')[0];
 
-    // ── Datos personales ──────────────────────────────────────────────────
     const nombre = document.getElementById('professional_name').value.trim();
     if (!nombre) {
         setError('professional_name', 'El nombre es obligatorio.');
@@ -174,7 +144,6 @@ function validarFormulario() {
         clearError('nacionalidad');
     }
 
-    // CURP solo si es mexicano
     if (nac === 'Mexicana') {
         const curp = document.getElementById('professional_curp').value.trim().toUpperCase();
         if (!curp) {
@@ -196,14 +165,13 @@ function validarFormulario() {
         }
     }
 
-    // ── Título que solicita ───────────────────────────────────────────────
     const gradoRadio = document.querySelector('input[name="course_type"]:checked');
     const grado = gradoRadio ? gradoRadio.value : '';
     if (!grado) { setError('course_type', 'Selecciona el grado del título.'); valido = false; }
     else clearError('course_type');
 
     const area = document.getElementById('course_cvecourse').value;
-    if (!area) { setError('course_cvecourse', 'Selecciona el área del título.'); valido = false; }
+    if (!area || area === 'null') { setError('course_cvecourse', 'Selecciona el área del título.'); valido = false; }
     else clearError('course_cvecourse');
 
     const fInicio = document.getElementById('course_startdate').value;
@@ -232,10 +200,9 @@ function validarFormulario() {
     }
 
     const modalidad = document.getElementById('expedition_iddegreemodality').value;
-    if (!modalidad) { setError('expedition_iddegreemodality', 'Selecciona la modalidad de titulación.'); valido = false; }
+    if (!modalidad || modalidad === 'null') { setError('expedition_iddegreemodality', 'Selecciona la modalidad de titulación.'); valido = false; }
     else clearError('expedition_iddegreemodality');
 
-    // ── Antecedentes académicos ───────────────────────────────────────────
     const cedula = document.getElementById('antecedent_document').value.trim();
     if (!cedula) {
         setError('antecedent_document', 'La cédula profesional es obligatoria.');
@@ -248,10 +215,10 @@ function validarFormulario() {
     }
 
     const archivosObligatorios = [
-        { id: 'archivo_certificado',  label: 'el certificado del grado anterior' },
-        { id: 'archivo_acta_examen',  label: 'el acta de examen del grado anterior' },
+        { id: 'archivo_certificado', label: 'el certificado del grado anterior' },
+        { id: 'archivo_acta_examen', label: 'el acta de examen del grado anterior' },
         { id: 'archivo_titulo_grado', label: 'el título de grado anterior' },
-        { id: 'archivo_cedula',       label: 'la cédula profesional' },
+        { id: 'archivo_cedula', label: 'la cédula profesional' }
     ];
 
     archivosObligatorios.forEach(({ id, label }) => {
@@ -267,10 +234,6 @@ function validarFormulario() {
     return valido;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Envío del formulario
-// ─────────────────────────────────────────────────────────────────────────────
-
 function enviarFormulario(e) {
     e.preventDefault();
 
@@ -280,69 +243,30 @@ function enviarFormulario(e) {
         return;
     }
 
-    const btn    = document.getElementById('btn-enviar');
+    const btn = document.getElementById('btn-enviar');
     const loader = document.getElementById('loader-envio');
     btn.disabled = true;
     if (loader) loader.style.display = '';
 
     const form = document.getElementById('form-preregistro');
-    const fd   = new FormData(form);
+    const fd = new FormData(form);
     fd.append('action', 9);
 
-    // Incluir el texto del área seleccionada
     const selectArea = document.getElementById('course_cvecourse');
     if (selectArea && selectArea.selectedIndex >= 0) {
         fd.set('course_name', selectArea.options[selectArea.selectedIndex].text);
     }
 
-    // Capturar texto de institución
-    const selectInst = document.getElementById('institution');
-    if (selectInst && selectInst.selectedIndex >= 0) {
-        fd.set('institution_name', selectInst.options[selectInst.selectedIndex].text);
-    }
-
-    // Capturar textos de selects de entidad federativa
-    const selExpState = document.getElementById('expedition-state');
-    if (selExpState && selExpState.selectedIndex >= 0) {
-        fd.set('expedition_state_text', selExpState.options[selExpState.selectedIndex].text);
-    }
-
-    const selAntState = document.getElementById('antecedent-state');
-    if (selAntState && selAntState.selectedIndex >= 0) {
-        fd.set('antecedent_state_text', selAntState.options[selAntState.selectedIndex].text);
-    }
-
-    // Incluir course_type del radio seleccionado
     const gradoChecked = document.querySelector('input[name="course_type"]:checked');
     if (gradoChecked) fd.set('course_type', gradoChecked.value);
 
-    // Incluir nacionalidad del radio seleccionado
     fd.set('nacionalidad', getNacionalidad());
-
-    // Mapear campos con guiones a los nombres esperados por el backend
-    [
-        ['date-end', 'date_end'],
-        ['date-expedition', 'date_expedition'],
-        ['social-service', 'social_service'],
-        ['social-service-legal', 'social_service_legal'],
-        ['expedition-state', 'expedition_state'],
-        ['antecedent-institution', 'antecedent_institution'],
-        ['antecedent-type-study', 'antecedent_type_study'],
-        ['antecedent-finich-date', 'antecedent_finich_date'],
-        ['antecedent-state', 'antecedent_state']
-    ].forEach(([id, name]) => {
-        const el = document.getElementById(id);
-        if (el && el.value !== undefined) {
-            fd.set(name, el.value);
-        }
-    });
 
     fetch(CONTROLLER_URL, { method: 'POST', body: fd })
         .then(r => r.json())
         .then(data => {
             if (loader) loader.style.display = 'none';
             if (data.ok) {
-                // Avanzar al step-4 (pantalla de éxito)
                 showStep(4);
             } else {
                 btn.disabled = false;
@@ -375,26 +299,17 @@ function enviarFormulario(e) {
         });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Init
-// ─────────────────────────────────────────────────────────────────────────────
-
 document.addEventListener('DOMContentLoaded', function () {
-
-    // Evento de grado → las áreas están hardcodeadas, no requieren carga dinámica
-    // Se mantiene el listener por si en el futuro se requiere filtrar por grado
     document.querySelectorAll('input[name="course_type"]').forEach(radio => {
         radio.addEventListener('change', function() {
             clearError('course_type');
         });
     });
 
-    // Evento de nacionalidad → mostrar/ocultar CURP (radio buttons)
     document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
         radio.addEventListener('change', toggleCurp);
     });
 
-    // Convertir CURP a mayúsculas automáticamente
     const inputCurp = document.getElementById('professional_curp');
     if (inputCurp) {
         inputCurp.addEventListener('input', function () {
@@ -402,7 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Convertir nombre y apellidos a mayúsculas y quitar acentos automáticamente
     ['professional_name', 'professional_surname', 'professional_secondsurname'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -414,17 +328,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Validar archivos al seleccionarlos
-    ['archivo_curp', 'archivo_certificado', 'archivo_acta_examen',
-     'archivo_titulo_grado', 'archivo_cedula'].forEach(id => {
+    ['archivo_curp', 'archivo_certificado', 'archivo_acta_examen', 'archivo_titulo_grado', 'archivo_cedula'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', () => validarArchivo(id));
     });
 
-    // Validar fechas en tiempo real
-    const fInicioEl  = document.getElementById('course_startdate');
+    const fInicioEl = document.getElementById('course_startdate');
     const fDefensaEl = document.getElementById('expedition_dateprofessionalexam');
-    const hoy        = new Date().toISOString().split('T')[0];
+    const hoy = new Date().toISOString().split('T')[0];
 
     if (fInicioEl) {
         fInicioEl.max = hoy;
@@ -451,9 +362,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Envío del formulario
     const form = document.getElementById('form-preregistro');
     if (form) form.addEventListener('submit', enviarFormulario);
 });
-
-

@@ -7,7 +7,13 @@ include_once 'core/Controller.php';
 session_start();
 if(isset($_SESSION['user_name']))
 {
-	echo '<script>location.href = "v/deegreDocument/document.php";</script>';
+	//echo '<script>location.href = "v/deegreDocument/document.php";</script>';
+	$rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'admin';
+if ($rol === 'admin') {
+    echo '<script>location.href = "v/secretaria/secretaria.php";</script>';
+} else {
+    echo '<script>location.href = "v/deegreDocument/document.php";</script>';
+}
 }
 else
 {

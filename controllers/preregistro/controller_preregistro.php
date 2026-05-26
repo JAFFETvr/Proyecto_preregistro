@@ -4,16 +4,12 @@ date_default_timezone_set("America/Mexico_City");
 require_once __DIR__ . '/../../models/model_preregistro.php';
 
 define('UPLOAD_DIR', __DIR__ . '/../../uploads/preregistro/');
-define('MAX_FILE_SIZE', 10 * 1024 * 1024); // 10 MB
+define('MAX_FILE_SIZE', 10 * 1024 * 1024);
 
 class actualizarController{
     private $actualizar;
 
     public function __construct(){}
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // MÉTODOS EXISTENTES (sin cambios)
-    // ─────────────────────────────────────────────────────────────────────────
 
     public function getInstitution(){
         $this->actualizar = new actualizar();
@@ -88,24 +84,15 @@ class actualizarController{
         echo json_encode($data);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MÉTODOS NUEVOS — Pre-registro público
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * action=9 — Alumno envía el formulario público.
-     */
     public function insertPreregistro(){
         header('Content-Type: application/json');
 
-        // ── Validar campos ───────────────────────────────────────────────
         $errores = actualizar::validarPreregistro($_POST, $_FILES);
         if (!empty($errores)){
             echo json_encode(['ok' => false, 'errores' => $errores]);
             return;
         }
 
-        // ── Subir archivos ───────────────────────────────────────────────
         $rutas = [];
         $camposArchivo = [
             'archivo_curp',
@@ -148,74 +135,94 @@ class actualizarController{
             $rutas[$campo] = $nombre;
         }
 
-        // ── Construir textos de modalidad ────────────────────────────────
-        $modId = (int)($_POST['expedition_iddegreemodality'] ?? 0);
+        $modTextoPost = $_POST['expedition_iddegreemodality'] ?? '';
+        $mapMod = [
+            'Tesis' => 1,
+            'Promedio' => 2,
+            'Tesina' => 3,
+            'Presentacion y Defensa' => 4,
+            'Portafolio de Evidencias' => 5
+        ];
+        $modId = $mapMod[$modTextoPost] ?? 0;
+
         $modalidades = [
-            1 => ['texto' => 'POR TESIS',                                     'detalle' => 'SIN DETALLES'],
-            2 => ['texto' => 'POR PROMEDIO',                                  'detalle' => 'SIN DETALLES'],
-            3 => ['texto' => 'TESINA',                                        'detalle' => 'TESINA'],
+            1 => ['texto' => 'POR TESIS', 'detalle' => 'SIN DETALLES'],
+            2 => ['texto' => 'POR PROMEDIO', 'detalle' => 'SIN DETALLES'],
+            3 => ['texto' => 'TESINA', 'detalle' => 'TESINA'],
             4 => ['texto' => 'PRESENTACION Y DEFENSA CON MATERIAL DIDACTICO', 'detalle' => 'MATERIAL DIDACTICO Y MULTIMEDIA'],
-            5 => ['texto' => 'PORTAFOLIO DE EVIDENCIAS',                      'detalle' => 'PORTAFOLIO PROFESIONAL DE EVIDENCIAS'],
+            5 => ['texto' => 'PORTAFOLIO DE EVIDENCIAS', 'detalle' => 'PORTAFOLIO PROFESIONAL DE EVIDENCIAS'],
         ];
         $modTexto   = $modalidades[$modId]['texto']  ?? 'OTRO';
         $modDetalle = $modalidades[$modId]['detalle'] ?? 'SIN DETALLES';
 
-        // ── Textos de selects ─────────────────────────────────────────────
-        $authId     = (int)($_POST['authorization']      ?? 0);
-        $authTexto  = ($authId === 8) ? 'DECRETO DE CREACION' : '';
+        $areaPost = $_POST['course_cvecourse'] ?? '';
+        $mapAreas = [
+            'Astrofisica' => 1,
+            'Optica' => 2,
+            'Electronica' => 3,
+            'Ciencias Computacionales' => 4,
+            'Ciencia y Tecnologia del Espacio' => 5,
+            'Ciencias y Tecnologias Biomedicas' => 6,
+            'Ciencias y Tecnologias de Seguridad' => 7,
+            'Ensenanza de Ciencias Exactas' => 8
+        ];
+        $courseCve = $mapAreas[$areaPost] ?? 0;
 
-        $socialServiceId    = (int)($_POST['social_service']       ?? 0);
+        $authId = (int)($_POST['authorization'] ?? 0);
+        $authTexto = ($authId === 8) ? 'DECRETO DE CREACION' : '';
+
+        $socialServiceId = (int)($_POST['social_service'] ?? 0);
         $socialServiceLegal = (int)($_POST['social_service_legal'] ?? 0);
-        $socialServiceTexto = ($socialServiceId === 0)    ? 'NO APLICA' : '';
-        $socialLegalTexto   = ($socialServiceLegal === 5) ? 'NO APLICA' : '';
+        $socialServiceTexto = ($socialServiceId === 0) ? 'NO APLICA' : '';
+        $socialLegalTexto = ($socialServiceLegal === 5) ? 'NO APLICA' : '';
 
-        $antTypeId     = (int)($_POST['antecedent_type_study'] ?? 0);
+        $grado = $_POST['course_type'] ?? '';
+        $antTypeId = ($grado === 'Doctorado') ? 1 : 2;
         $antTypeTextos = [1 => 'MAESTRIA', 2 => 'LICENCIATURA'];
         $antTypeTexto  = $antTypeTextos[$antTypeId] ?? '';
 
-        // ── Insertar en BD ───────────────────────────────────────────────
         $this->actualizar = new actualizar();
         $id = $this->actualizar->insertPreregistro(
-            $_POST['professional_curp']            ?? '',   // professional_curp
-            $_POST['professional_name'],                    // professional_name
-            $_POST['professional_surname'],                 // professional_surname
-            $_POST['professional_secondsurname']   ?? '',   // professional_secondsurname
-            $_POST['professional_email'],                   // professional_email
-            $_POST['nacionalidad']                 ?? '',   // nacionalidad
-            $_POST['controlinvoice']               ?? '',   // controlinvoice
-            (int)($_POST['institution']            ?? 0),   // institution_cveinstitution
-            $_POST['institution_name']             ?? '',   // institution_nameinstitution
-            (int)$_POST['course_cvecourse'],                // course_cvecourse
-            $_POST['course_name']                  ?? '',   // course_name
-            $_POST['course_startdate'],                     // course_startdate
-            $_POST['date_end']                     ?? '',   // course_finishdate
-            $authId,                                        // course_idreconnaissanceauthorization
-            $authTexto,                                     // course_reconnaissanceauthorization
-            $_POST['date_expedition']              ?? '',   // expedition_date
-            $modId,                                         // expedition_iddegreemodality
-            $modTexto,                                      // expedition_degreemodality
-            $modDetalle,                                    // expedition_degreemodality_details
-            $_POST['expedition_dateprofessionalexam'],      // expedition_dateprofessionalexam
-            $_POST['expedition_dateexemption']     ?? null, // expedition_dateexemption
-            $socialServiceId,                               // expedition_socialservice
-            $socialServiceLegal,                            // expedition_idlegalbasissocialservice
-            $socialServiceTexto,                            // expedition_legalbasissocialservice
-            $socialLegalTexto,                              // expedition_legalbasissocialservice_text (unused but passed)
-            $_POST['expedition_state']             ?? '',   // expedition_idstate
-            $_POST['expedition_state_text']        ?? '',   // expedition_state texto
-            $antTypeId,                                     // antecedent_idtypestudy
-            $antTypeTexto,                                  // antecedent_typestudy
-            $_POST['antecedent_institution']       ?? '',   // antecedent_institutionorigin
-            $_POST['antecedent_state']             ?? '',   // antecedent_idstate
-            $_POST['antecedent_state_text']        ?? '',   // antecedent_state texto
-            $_POST['antecedent_finich_date']       ?? '',   // antecedent_finishdate
-            $_POST['antecedent_document'],                  // antecedent_document
-            $_POST['carrera_egreso']               ?? '',   // carrera_egreso
-            $rutas['archivo_curp']                 ?? null, // archivo_curp
-            $rutas['archivo_certificado']          ?? '',   // archivo_certificado
-            $rutas['archivo_acta_examen']          ?? '',   // archivo_acta_examen
-            $rutas['archivo_titulo_grado']         ?? '',   // archivo_titulo_grado
-            $rutas['archivo_cedula']               ?? ''    // archivo_cedula
+            $_POST['professional_curp']            ?? '',   
+            $_POST['professional_name'],                    
+            $_POST['professional_surname'],                 
+            $_POST['professional_secondsurname']   ?? '',   
+            $_POST['professional_email'],                   
+            $_POST['nacionalidad']                 ?? '',   
+            $_POST['controlinvoice']               ?? '',   
+            (int)($_POST['institution']            ?? 0),   
+            $_POST['institution_name']             ?? '',   
+            $courseCve,                                     
+            $_POST['course_cvecourse']             ?? '',   
+            $_POST['course_startdate'],                     
+            $_POST['date_end']                     ?? '',   
+            $authId,                                        
+            $authTexto,                                     
+            $_POST['date_expedition']              ?? '',   
+            $modId,                                         
+            $modTexto,                                      
+            $modDetalle,                                    
+            $_POST['expedition_dateprofessionalexam'],      
+            $_POST['expedition_dateexemption']     ?? null, 
+            $socialServiceId,                               
+            $socialServiceLegal,                            
+            $socialServiceTexto,                            
+            $socialLegalTexto,                              
+            $_POST['expedition_state']             ?? '',   
+            $_POST['expedition_state_text']        ?? '',   
+            $antTypeId,                                     
+            $antTypeTexto,                                  
+            $_POST['antecedent_institution']       ?? '',   
+            $_POST['antecedent_state']             ?? '',   
+            $_POST['antecedent_state_text']        ?? '',   
+            $_POST['antecedent_finich_date']       ?? '',   
+            $_POST['antecedent_document'],                  
+            $_POST['carrera_egreso']               ?? '',   
+            $rutas['archivo_curp']                 ?? null, 
+            $rutas['archivo_certificado']          ?? '',   
+            $rutas['archivo_acta_examen']          ?? '',   
+            $rutas['archivo_titulo_grado']         ?? '',   
+            $rutas['archivo_cedula']               ?? ''    
         );
 
         if (is_numeric($id)){
@@ -226,9 +233,6 @@ class actualizarController{
         }
     }
 
-    /**
-     * action=10 — Lista pre-registros pendientes.
-     */
     public function getPreregistrosPendientes(){
         if (!isset($_SESSION['username'])){ http_response_code(401); return; }
         header('Content-Type: application/json');
@@ -236,9 +240,6 @@ class actualizarController{
         echo json_encode($this->actualizar->getPreregistrosPendientes());
     }
 
-    /**
-     * action=11 — Detalle de un pre-registro.
-     */
     public function getPreregistroById(){
         if (!isset($_SESSION['username'])){ http_response_code(401); return; }
         header('Content-Type: application/json');
@@ -247,9 +248,6 @@ class actualizarController{
         echo json_encode($row ?: ['error' => 'No encontrado']);
     }
 
-    /**
-     * action=12 — Marcar como promovido.
-     */
     public function promoverPreregistro(){
         if (!isset($_SESSION['username'])){ http_response_code(401); return; }
         header('Content-Type: application/json');
@@ -261,9 +259,6 @@ class actualizarController{
         echo json_encode(['ok' => $ok]);
     }
 
-    /**
-     * action=13 — Áreas públicas según grado.
-     */
     public function getAreaPublico(){
         header('Content-Type: application/json');
         $program = isset($_POST['program']) ? (int)$_POST['program'] : 0;
@@ -273,10 +268,6 @@ class actualizarController{
         echo json_encode($data);
     }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Dispatcher
-// ─────────────────────────────────────────────────────────────────────────────
 
 session_start();
 $obj = new actualizarController();

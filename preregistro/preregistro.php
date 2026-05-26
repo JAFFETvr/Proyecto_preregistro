@@ -437,9 +437,6 @@
 
     <form id="form-preregistro" novalidate enctype="multipart/form-data">
         
-        <!-- ═══════════════════════════════════════════════════════════════ -->
-        <!-- STEP 1 — Datos personales                                      -->
-        <!-- ═══════════════════════════════════════════════════════════════ -->
         <div id="step-1" class="form-step active">
             <div class="seccion-titulo">
                 <i class="fa-solid fa-user"></i> Datos personales
@@ -457,21 +454,15 @@
                         <div class="field-hint">En mayúsculas, sin acentos</div>
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="professional_secondsurname">Apellido materno <span class="opcional">(opcional)</span></label>
+                        <label for="professional_secondsurname">Apellido materno</label>
                         <input type="text" class="form-control" id="professional_secondsurname" name="professional_secondsurname" maxlength="100" style="text-transform:uppercase;">
                         <div class="field-hint">En mayúsculas, sin acentos</div>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group col-md-8">
-                        <label for="professional_email">Correo electrónico <span class="req">*</span></label>
-                        <input type="email" class="form-control" id="professional_email" name="professional_email" maxlength="100" required>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="controlinvoice">Folio del título <span class="req">*</span></label>
-                        <input type="text" class="form-control" id="controlinvoice" name="controlinvoice" required>
-                    </div>
+                <div class="form-group">
+                    <label for="professional_email">Correo electrónico <span class="req">*</span></label>
+                    <input type="email" class="form-control" id="professional_email" name="professional_email" maxlength="100" required>
                 </div>
 
                 <div class="form-group">
@@ -492,8 +483,9 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="professional_curp">CURP <span class="req">*</span></label>
-                            <input type="text" class="form-control" id="professional_curp" name="professional_curp" maxlength="18" style="text-transform:uppercase; letter-spacing:0.08em;">
-                            <div class="field-hint">Ejemplo: VIGJ900101HDFCCR09</div>
+                            <input type="text" class="form-control" id="professional_curp" name="professional_curp" minlength="18" maxlength="18" pattern="^[a-zA-Z0-9]{18}$" style="text-transform:uppercase; letter-spacing:0.08em;">
+                            <div class="field-hint">En mayúsculas, exactamente 18 caracteres</div>
+                            <div class="invalid-feedback">La CURP debe tener exactamente 18 caracteres alfanuméricos.</div>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Adjuntar CURP <span class="req">*</span></label>
@@ -516,26 +508,16 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════ -->
-        <!-- STEP 2 — Título que solicita                                   -->
-        <!-- ═══════════════════════════════════════════════════════════════ -->
         <div id="step-2" class="form-step">
             <div class="seccion-titulo" style="margin-top:0;">
                 <i class="fa-solid fa-scroll"></i> Título que solicita
             </div>
             <div class="card-seccion">
                 <div class="form-group">
-                    <label for="institution">Institución <span class="req">*</span></label>
-                    <select id="institution" name="institution" class="form-control custom-select" required>
-                        <option value="null" selected disabled>Seleccione una institución</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Grado del título <span class="req">*</span></label>
+                    <label>Grado del título que solicita <span class="req">*</span></label>
                     <div class="opciones-radio">
-                        <label class="opcion-radio"><input type="radio" name="course_type" value="1" required><span>Maestría</span></label>
-                        <label class="opcion-radio"><input type="radio" name="course_type" value="2" required><span>Doctorado</span></label>
+                        <label class="opcion-radio"><input type="radio" name="course_type" value="Maestria" required><span>Maestría</span></label>
+                        <label class="opcion-radio"><input type="radio" name="course_type" value="Doctorado" required><span>Doctorado</span></label>
                     </div>
                 </div>
 
@@ -543,107 +525,40 @@
                     <label for="course_cvecourse">Área del título que solicita <span class="req">*</span></label>
                     <select class="form-control custom-select" id="course_cvecourse" name="course_cvecourse" required>
                         <option value="null" selected disabled>Selecciona área</option>
+                        <option value="Astrofisica">Astrofísica</option>
+                        <option value="Optica">Óptica</option>
+                        <option value="Electronica">Electrónica</option>
+                        <option value="Ciencias Computacionales">Ciencias Computacionales</option>
+                        <option value="Ciencia y Tecnologia del Espacio">Ciencia y Tecnología del Espacio</option>
+                        <option value="Ciencias y Tecnologias Biomedicas">Ciencias y Tecnologías Biomédicas</option>
+                        <option value="Ciencias y Tecnologias de Seguridad">Ciencias y Tecnologías de Seguridad</option>
+                        <option value="Ensenanza de Ciencias Exactas">Enseñanza de Ciencias Exactas</option>
                     </select>
                 </div>
 
                 <hr class="divisor">
 
                 <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label>Fecha de inicio <span class="req">*</span></label>
+                    <div class="form-group col-md-6">
+                        <label>Fecha de inicio de grado <span class="req">*</span></label>
                         <input type="date" class="form-control" id="course_startdate" name="course_startdate" required>
                     </div>
-                    <div class="form-group col-md-4">
-                        <label>Fecha de terminación <span class="req">*</span></label>
-                        <input type="date" class="form-control" id="date-end" name="date-end" required>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>Fecha de defensa / examen <span class="req">*</span></label>
+                    <div class="form-group col-md-6">
+                        <label>Fecha de defensa de tesis, examen o entrevista <span class="req">*</span></label>
                         <input type="date" class="form-control" id="expedition_dateprofessionalexam" name="expedition_dateprofessionalexam" required>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label>Fecha de expedición <span class="req">*</span></label>
-                        <input type="date" class="form-control" id="date-expedition" name="date-expedition" required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label>Fecha de exención <span class="req">*</span></label>
-                        <input type="date" class="form-control" id="expedition_dateexemption" name="expedition_dateexemption" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Autorización de reconocimiento <span class="req">*</span></label>
-                    <select id="authorization" name="authorization" class="form-control custom-select" required>
-                        <option value="null" selected disabled>Seleccione una opción</option>
-                        <option value="8">DECRETO DE CREACIÓN</option>
-                    </select>
                 </div>
 
                 <div class="form-group">
                     <label>Modalidad de titulación <span class="req">*</span></label>
                     <select class="form-control custom-select" id="expedition_iddegreemodality" name="expedition_iddegreemodality" required>
                         <option value="null" selected disabled>Seleccione una opción</option>
+                        <option value="Tesis">Tesis (Astrófísica, Óptica, Electrónica, C. Computacionales, Espacio, Biomédicas, Seguridad, MECE)</option>
+                        <option value="Tesina">Tesina (Solo MECE)</option>
+                        <option value="Promedio">Promedio (Solo MECE)</option>
+                        <option value="Presentacion y Defensa">Presentación y Defensa de intervención con Material Didáctico (Solo MECE)</option>
+                        <option value="Portafolio de Evidencias">Portafolio de Evidencias</option>
                     </select>
-                </div>
-
-                <hr class="divisor">
-
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label>Servicio social <span class="req">*</span></label>
-                        <select id="social-service" name="social-service" class="form-control custom-select" required>
-                            <option value="null" selected disabled>Seleccione una opción</option>
-                            <option value="0">NO APLICA</option>
-                        </select>
-                    </div>      
-                    <div class="form-group col-md-4">
-                        <label>Fundamento legal <span class="req">*</span></label>
-                        <select id="social-service-legal" name="social-service-legal" class="form-control custom-select" required>
-                            <option value="null" selected disabled>Seleccione una opción</option>
-                            <option value="5">NO APLICA</option>
-                        </select>
-                    </div>  
-                    <div class="form-group col-md-4">
-                        <label>Entidad Federativa <span class="req">*</span></label>
-                        <select id="expedition-state" name="expedition-state" class="form-control custom-select" required>
-                        <option value="null" selected disabled>Seleccione una opción</option>
-                        <option value="1">Aguascalientes</option>
-                        <option value="2">Baja California</option>
-                        <option value="3">Baja California Sur</option>
-                        <option value="4">Campeche</option>
-                        <option value="5">Coahuila</option>
-                        <option value="6">Colima</option>
-                        <option value="7">Chiapas</option>
-                        <option value="8">Chihuahua</option>
-                        <option value="9">Ciudad de México</option>
-                        <option value="10">Durango</option>
-                        <option value="11">Guanajuato</option>
-                        <option value="12">Guerrero</option>
-                        <option value="13">Hidalgo</option>
-                        <option value="14">Jalisco</option>
-                        <option value="15">Estado de México</option>
-                        <option value="16">Michoacán</option>
-                        <option value="17">Morelos</option>
-                        <option value="18">Nayarit</option>
-                        <option value="19">Nuevo León</option>
-                        <option value="20">Oaxaca</option>
-                        <option value="21">Puebla</option>
-                        <option value="22">Querétaro</option>
-                        <option value="23">Quintana Roo</option>
-                        <option value="24">San Luis Potosí</option>
-                        <option value="25">Sinaloa</option>
-                        <option value="26">Sonora</option>
-                        <option value="27">Tabasco</option>
-                        <option value="28">Tamaulipas</option>
-                        <option value="29">Tlaxcala</option>
-                        <option value="30">Veracruz</option>
-                        <option value="31">Yucatán</option>
-                        <option value="32">Zacatecas</option>
-                    </select>
-                    </div>                                                          
                 </div>
             </div>
             <div class="step-footer">
@@ -652,85 +567,23 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════ -->
-        <!-- STEP 3 — Antecedentes académicos                               -->
-        <!-- ═══════════════════════════════════════════════════════════════ -->
         <div id="step-3" class="form-step">
             <div class="seccion-titulo" style="margin-top:0;">
-                <i class="fa-solid fa-building-columns"></i> Antecedentes académicos
+                <i class="fa-solid fa-building-columns"></i> Antecedentes Académicos
             </div>
             <div class="card-seccion">
                 <div class="nota-info">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <div>Adjunta los documentos del grado anterior.</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group col-md-8">
-                        <label>Institución de procedencia <span class="req">*</span></label>
-                        <input type="text" class="form-control" id="antecedent-institution" name="antecedent-institution" style="text-transform:uppercase;" required>
-                    </div>                      
-                    <div class="form-group col-md-4">
-                        <label>Tipo de estudio <span class="req">*</span></label>
-                        <select id="antecedent-type-study" name="antecedent-type-study" class="form-control custom-select" required>
-                            <option value="null" selected disabled>Seleccione una opción</option>
-                            <option value="1">MAESTRÍA</option>
-                            <option value="2">LICENCIATURA</option> 
-                        </select>
-                    </div>                                                                                  
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label>Fecha de terminación <span class="req">*</span></label>
-                        <input type="date" class="form-control" id="antecedent-finich-date" name="antecedent-finich-date" required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label>Entidad Federativa <span class="req">*</span></label>
-                        <select id="antecedent-state" name="antecedent-state" class="form-control custom-select" required>
-                        <option value="null" selected disabled>Seleccione la entidad</option>
-                        <option value="1">Aguascalientes</option>
-                        <option value="2">Baja California</option>
-                        <option value="3">Baja California Sur</option>
-                        <option value="4">Campeche</option>
-                        <option value="5">Coahuila</option>
-                        <option value="6">Colima</option>
-                        <option value="7">Chiapas</option>
-                        <option value="8">Chihuahua</option>
-                        <option value="9">Ciudad de México</option>
-                        <option value="10">Durango</option>
-                        <option value="11">Guanajuato</option>
-                        <option value="12">Guerrero</option>
-                        <option value="13">Hidalgo</option>
-                        <option value="14">Jalisco</option>
-                        <option value="15">Estado de México</option>
-                        <option value="16">Michoacán</option>
-                        <option value="17">Morelos</option>
-                        <option value="18">Nayarit</option>
-                        <option value="19">Nuevo León</option>
-                        <option value="20">Oaxaca</option>
-                        <option value="21">Puebla</option>
-                        <option value="22">Querétaro</option>
-                        <option value="23">Quintana Roo</option>
-                        <option value="24">San Luis Potosí</option>
-                        <option value="25">Sinaloa</option>
-                        <option value="26">Sonora</option>
-                        <option value="27">Tabasco</option>
-                        <option value="28">Tamaulipas</option>
-                        <option value="29">Tlaxcala</option>
-                        <option value="30">Veracruz</option>
-                        <option value="31">Yucatán</option>
-                        <option value="32">Zacatecas</option>
-                    </select>
-                    </div> 
+                    <div>Si el título de grado que solicitas es maestría, tendrás que adjuntar los documentos de licenciatura. Si el título de grado que solicitas es de doctorado, tendrás que adjuntar los documentos de maestría.</div>
                 </div>
 
                 <div class="form-group">
-                    <label>Certificado <span class="req">*</span></label>
+                    <label>Adjuntar Certificado del grado anterior al que solicita <span class="req">*</span></label>
                     <div class="upload-area" onclick="document.getElementById('archivo_certificado').click()">
                         <div class="text-center">
                             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                             <div class="upload-label">Seleccionar archivo</div>
+                            <div class="upload-hint">Sube 1 archivo compatible: PDF o imagen. Tamaño máximo: 10 MB</div>
                         </div>
                         <input type="file" id="archivo_certificado" name="archivo_certificado" accept=".pdf,.jpg,.jpeg,.png" required>
                     </div>
@@ -738,11 +591,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Acta de examen <span class="req">*</span></label>
+                    <label>Adjuntar Acta de examen del grado anterior al que solicita <span class="req">*</span></label>
                     <div class="upload-area" onclick="document.getElementById('archivo_acta_examen').click()">
                         <div class="text-center">
                             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                             <div class="upload-label">Seleccionar archivo</div>
+                            <div class="upload-hint">Sube 1 archivo compatible: PDF o imagen. Tamaño máximo: 10 MB</div>
                         </div>
                         <input type="file" id="archivo_acta_examen" name="archivo_acta_examen" accept=".pdf,.jpg,.jpeg,.png" required>
                     </div>
@@ -750,11 +604,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Título de grado <span class="req">*</span></label>
+                    <label>Adjuntar Título de grado del grado anterior al que solicita <span class="req">*</span></label>
                     <div class="upload-area" onclick="document.getElementById('archivo_titulo_grado').click()">
                         <div class="text-center">
                             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                             <div class="upload-label">Seleccionar archivo</div>
+                            <div class="upload-hint">Sube 1 archivo compatible: PDF o imagen. Tamaño máximo: 10 MB</div>
                         </div>
                         <input type="file" id="archivo_titulo_grado" name="archivo_titulo_grado" accept=".pdf,.jpg,.jpeg,.png" required>
                     </div>
@@ -765,15 +620,16 @@
 
                 <div class="form-row">
                     <div class="form-group col-md-5">
-                        <label>No. de Cédula <span class="req">*</span></label>
+                        <label>No. de Cédula profesional <span class="req">*</span></label>
                         <input type="text" class="form-control" id="antecedent_document" name="antecedent_document" maxlength="8" inputmode="numeric" required>
                     </div>
                     <div class="form-group col-md-7">
-                        <label>Adjuntar Cédula <span class="req">*</span></label>
+                        <label>Adjuntar Cédula profesional <span class="req">*</span></label>
                         <div class="upload-area" onclick="document.getElementById('archivo_cedula').click()">
                             <div class="text-center">
                                 <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                                 <div class="upload-label">Seleccionar archivo</div>
+                                <div class="upload-hint">Sube 1 archivo compatible: PDF o imagen. Tamaño máximo: 10 MB</div>
                             </div>
                             <input type="file" id="archivo_cedula" name="archivo_cedula" accept=".pdf,.jpg,.jpeg,.png" required>
                         </div>
@@ -787,9 +643,6 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════ -->
-        <!-- STEP 4 — Confirmación / Éxito                                  -->
-        <!-- ═══════════════════════════════════════════════════════════════ -->
         <div id="step-4" class="form-step">
             <div class="card-seccion text-center" style="padding: 4rem 2rem; border-radius: 8px; border: 1px solid var(--gris-borde);">
                 <div style="font-size: 3.5rem; color: var(--exito); margin-bottom: 1.5rem;"><i class="fa-solid fa-circle-check"></i></div>
@@ -799,8 +652,6 @@
                 </p>
             </div>
             <div class="step-footer">
-
-
             </div>
         </div>
 
@@ -838,6 +689,14 @@ function validateStep(step) {
         if (el.closest('#bloque-curp') && document.getElementById('bloque-curp').style.display === 'none') {
             return;
         }
+
+        if (el.id === 'professional_curp') {
+            if (el.value.length !== 18) {
+                isValid = false;
+                el.classList.add('is-invalid');
+                return;
+            }
+        }
         
         if (el.type === 'radio') {
             const radioGroup = document.querySelectorAll(`input[name="${el.name}"]`);
@@ -855,7 +714,9 @@ function validateStep(step) {
                 el.closest('.upload-area').classList.add('is-invalid-file');
             }
         } else {
-            el.classList.remove('is-invalid');
+            if (el.id !== 'professional_curp' || el.value.length === 18) {
+                el.classList.remove('is-invalid');
+            }
             if (el.type === 'file') {
                 el.closest('.upload-area').classList.remove('is-invalid-file');
             }
@@ -876,7 +737,10 @@ function retrocederPaso(anterior) {
 }
 
 function finalizarFormulario() {
-    document.getElementById('form-preregistro').dispatchEvent(new Event('submit', { cancelable: true }));
+    if (validateStep(3)) {
+        document.getElementById('form-preregistro').dispatchEvent(new Event('submit', { cancelable: true }));
+        showStep(4);
+    }
 }
 
 document.querySelectorAll('input[type="file"]').forEach(function(input) {
@@ -921,7 +785,13 @@ document.querySelectorAll('.upload-area').forEach(function(area) {
 
 document.querySelectorAll('input:not([type="file"]), select').forEach(function(input) {
     input.addEventListener('input', function() {
-        if (this.value && this.value !== 'null' && this.value !== '') {
+        if (this.id === 'professional_curp') {
+            if (this.value.length === 18) {
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+            }
+        } else if (this.value && this.value !== 'null' && this.value !== '') {
             this.classList.remove('is-invalid');
             if (this.type === 'radio') {
                 this.closest('.opciones-radio').classList.remove('is-invalid-radio');

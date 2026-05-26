@@ -5,10 +5,6 @@ require_once __DIR__ . '/../m/db_connection.php';
 
 class actualizar{
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MÉTODOS EXISTENTES (sin cambios)
-    // ─────────────────────────────────────────────────────────────────────────
-
     public function getInstitution(){ 
         $con=new DBconnection();
         $con->openDB(); 
@@ -225,10 +221,6 @@ class actualizar{
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // MÉTODOS NUEVOS — Pre-registro público del alumno
-    // ─────────────────────────────────────────────────────────────────────────
-
     public function insertPreregistro(
         $professional_curp,
         $professional_name,
@@ -275,7 +267,6 @@ class actualizar{
         $con->openDB();
         $db = $con->getConn();
 
-        // Helpers para valores nullables
         $esc  = fn($v) => pg_escape_string($db, $v);
         $str  = fn($v) => ($v !== null && $v !== '') ? "'" . pg_escape_string($db, trim($v)) . "'" : "NULL";
         $strU = fn($v) => ($v !== null && $v !== '') ? "'" . pg_escape_string($db, strtoupper(trim($v))) . "'" : "NULL";
@@ -421,18 +412,12 @@ class actualizar{
         return $row ? true : false;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // CORRECCIÓN PRINCIPAL: validarPreregistro con zona horaria correcta
-    // ─────────────────────────────────────────────────────────────────────────
-
     public static function validarPreregistro($post, $files){
         $errores = array();
 
-        // Zona horaria explícita para evitar diferencias UTC vs México
         $tz  = new DateTimeZone('America/Mexico_City');
         $hoy = new DateTime('today', $tz);
 
-        // ── Datos personales ──────────────────────────────────────────────
         if (empty(trim($post['professional_name'] ?? '')))
             $errores['professional_name'] = 'El nombre es obligatorio.';
 
@@ -470,19 +455,15 @@ class actualizar{
                 $errores['archivo_curp'] = 'Debes adjuntar tu CURP.';
         }
 
-        // ── Título que solicita ───────────────────────────────────────────
-        if (!in_array($post['course_type'] ?? '', ['1','2']))
+        if (!in_array($post['course_type'] ?? '', ['Maestria','Doctorado']))
             $errores['course_type'] = 'Selecciona el grado del título.';
 
         if (empty($post['course_cvecourse'] ?? ''))
             $errores['course_cvecourse'] = 'Selecciona el área del título.';
 
-        // ── Validación de fechas con DateTime y zona horaria correcta ─────
         $fInicio  = trim($post['course_startdate'] ?? '');
-        $fFin     = trim($post['date_end'] ?? '');
         $fDefensa = trim($post['expedition_dateprofessionalexam'] ?? '');
 
-        // Fecha de inicio
         if (empty($fInicio)) {
             $errores['course_startdate'] = 'La fecha de inicio de grado es obligatoria.';
         } else {
@@ -494,7 +475,6 @@ class actualizar{
             }
         }
 
-        // Fecha de defensa / examen
         if (empty($fDefensa)) {
             $errores['expedition_dateprofessionalexam'] = 'La fecha de defensa/examen es obligatoria.';
         } else {
@@ -511,10 +491,9 @@ class actualizar{
             }
         }
 
-        if (!in_array($post['expedition_iddegreemodality'] ?? '', ['1','2','3','4','5']))
+        if (!in_array($post['expedition_iddegreemodality'] ?? '', ['Tesis','Tesina','Promedio','Presentacion y Defensa','Portafolio de Evidencias']))
             $errores['expedition_iddegreemodality'] = 'Selecciona una modalidad de titulación.';
 
-        // ── Antecedentes académicos ───────────────────────────────────────
         $cedula = trim($post['antecedent_document'] ?? '');
         if (empty($cedula))
             $errores['antecedent_document'] = 'La cédula profesional es obligatoria.';

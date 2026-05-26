@@ -62,11 +62,15 @@ function buildUrl($path, $struct) {
 
         switch ($struct[$i]) {
             case "domain":
-                if($GLOBALS["config"]["contains_sessions"]){
-                    $arr[$struct[$i]] = $path[$p]."/".$path[$p+1]; 
-                $p++;
-                }else{
-                $arr[$struct[$i]] = $path[$p]; 
+                if ($GLOBALS["config"]["contains_sessions"]) {
+                    if (isset($path[$p + 1]) && $path[$p + 1] !== '') {
+                        $arr[$struct[$i]] = $path[$p] . "/" . $path[$p + 1];
+                        $p++;
+                    } else {
+                        $arr[$struct[$i]] = $path[$p];
+                    }
+                } else {
+                    $arr[$struct[$i]] = $path[$p];
                 }
                 break;
             default :
