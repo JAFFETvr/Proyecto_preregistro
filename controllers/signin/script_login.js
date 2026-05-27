@@ -14,7 +14,6 @@ $(document).ready(function () {
             return;
         }
 
-        // Deshabilitar botón mientras carga
         var $btn = $(this).find('button[type="submit"]');
         $btn.prop('disabled', true).text('Verificando...');
 
@@ -25,7 +24,8 @@ $(document).ready(function () {
         }, function (resp) {
 
             if (resp.ok) {
-                if (resp.rol === 'secretaria') {
+                // Aquí estaba el error, ahora detecta tanto 'secretaria' como 'admin'
+                if (resp.rol === 'secretaria' || resp.rol === 'admin') {
                     location.href = 'v/secretaria/secretaria.php';
                 } else {
                     location.href = 'v/deegreDocument/document.php';

@@ -371,20 +371,26 @@ class actualizar{
         return "error";
     }
 
-    public function getPreregistrosPendientes(){
+   public function getPreregistrosPendientes(){
         $con = new DBconnection();
         $con->openDB();
         $res = $con->query("
             SELECT id_titledata, professional_name, professional_surname,
                    professional_secondsurname, professional_email,
-                   course_name, course_type, status,
+                   course_name, status,
                    TO_CHAR(date_register, 'DD/MM/YYYY HH24:MI') AS fecha_registro
             FROM titledata
             WHERE status = 1
-            ORDER BY date_register DESC
+            ORDER BY id_titledata DESC
         ");
+        
         $data = array();
-        while($row = pg_fetch_assoc($res)) $data[] = $row;
+        if ($res) {
+            while($row = pg_fetch_assoc($res)) {
+                $data[] = $row;
+            }
+        }
+        
         $con->closeDB();
         return $data;
     }
@@ -393,7 +399,12 @@ class actualizar{
         $con = new DBconnection();
         $con->openDB();
         $res = $con->query("SELECT * FROM titledata WHERE id_titledata = " . (int)$id);
-        $row = pg_fetch_assoc($res);
+        
+        $row = null;
+        if ($res) {
+            $row = pg_fetch_assoc($res);
+        }
+        
         $con->closeDB();
         return $row ?: null;
     }
