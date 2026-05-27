@@ -374,13 +374,16 @@ class actualizar{
    public function getPreregistrosPendientes(){
         $con = new DBconnection();
         $con->openDB();
+        
+        // Se cambió WHERE status = 1 a WHERE status IN (1, 2)
+        // y se agregó controlinvoice para el buscador
         $res = $con->query("
             SELECT id_titledata, professional_name, professional_surname,
                    professional_secondsurname, professional_email,
-                   course_name, status,
+                   course_name, status, controlinvoice,
                    TO_CHAR(date_register, 'DD/MM/YYYY HH24:MI') AS fecha_registro
             FROM titledata
-            WHERE status = 1
+            WHERE status IN (1, 2)
             ORDER BY id_titledata DESC
         ");
         

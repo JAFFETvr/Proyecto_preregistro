@@ -126,7 +126,6 @@ if (isset($_SESSION['user_name']))
 
 
 
-
 					<div class="row">
 						<div class="col-lg-12 col-md-12 col-md-12">
 							<div class="form-group">
