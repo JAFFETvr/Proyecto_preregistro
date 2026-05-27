@@ -48,12 +48,12 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('click', '.btn-editar', function () {
+    // Escuchar tanto al botón de VER como al de EDITAR
+    $(document).on('click', '.btn-editar, .btn-ver', function () {
         var id = $(this).data('id');
         abrirDetalle(id);
     });
 
-    // Evento arreglado: Usa las nuevas clases btn-doc para evitar choques con Bootstrap
     $(document).on('click', '.btn-view-pdf', function() {
         $('.btn-view-pdf').removeClass('active');
         $(this).addClass('active');
@@ -64,21 +64,29 @@ $(document).ready(function () {
     });
 
     $('#btn-promover').on('click', function () {
-    if (!idSeleccionado) return;
-    bootbox.confirm({
-        title: "Completar Registro",
-        message: "¿Deseas ir al formulario para completar los datos administrativos de este alumno?",
-        buttons: {
-            confirm: { label: 'Sí, ir al formulario', className: 'btn-success' },
-            cancel:  { label: 'Cancelar', className: 'btn-secondary' }
-        },
-        callback: function (result) {
-            if (result) {
-                window.location.href = 'completar_registro.php?id=' + idSeleccionado;
+        if (!idSeleccionado) return;
+        
+        var actionType = $(this).data('action-type');
+        var titleMsg = (actionType === 'crear') ? "Completar Registro" : "Editar Registro";
+        var bodyMsg = (actionType === 'crear') 
+            ? "¿Deseas ir al formulario para completar los datos administrativos de este alumno?" 
+            : "¿Deseas modificar los datos administrativos de este registro?";
+            
+        bootbox.confirm({
+            title: titleMsg,
+            message: bodyMsg,
+            buttons: {
+                confirm: { label: 'Sí, continuar', className: (actionType === 'crear') ? 'btn-success' : 'btn-warning' },
+                cancel:  { label: 'Cancelar', className: 'btn-secondary' }
+            },
+            callback: function (result) {
+                if (result) {
+                    window.location.href = 'completar_registro.php?id=' + idSeleccionado;
+                }
             }
-        }
+        });
     });
-});
+
     function cargarDatos(status) {
         mostrarLoading(true);
         $('#tbody-registros').html('<tr><td colspan="4" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</td></tr>');
@@ -127,13 +135,18 @@ $(document).ready(function () {
             var fecha = (r.fecha_registro || '').split(' ')[0]; 
             var iniciales = obtenerIniciales(r.professional_name, r.professional_surname);
 
+            // Determinar Ícono y Clase dependiendo del Estatus
+            var btnIcon = (r.status == 1) ? '<i class="fa-solid fa-eye"></i>' : '<i class="fa-solid fa-pen-to-square"></i>';
+            var btnClass = (r.status == 1) ? 'btn-ver' : 'btn-editar';
+            var titleTooltip = (r.status == 1) ? 'Ver pre-registro' : 'Editar registro';
+
             html += '<tr>' +
                 '<td><span class="avatar-iniciales">' + iniciales + '</span>' + nombre + '</td>' +
                 '<td>' + programa + '</td>' +
                 '<td class="text-center"><span class="chip-fecha">' + fecha + '</span></td>' +
                 '<td class="text-center">' +
-                    '<button class="btn-editar" data-id="' + r.id_titledata + '">' +
-                    '<i class="fa-solid fa-pen-to-square"></i></button>' +
+                    '<button class="' + btnClass + '" data-id="' + r.id_titledata + '" title="' + titleTooltip + '">' +
+                    btnIcon + '</button>' +
                 '</td>' +
             '</tr>';
         });
@@ -189,7 +202,6 @@ $(document).ready(function () {
         return ini.toUpperCase();
     }
 
-    // Botones rediseñados para no depender de Bootstrap
     function getFileLink(filename, label) {
         if (!filename) return '<div class="doc-missing"><i class="fa-solid fa-xmark"></i> Sin ' + label + '</div>';
         return '<button type="button" class="btn-doc btn-view-pdf" data-file="../../uploads/preregistro/' + filename + '"><i class="fa-solid fa-file-pdf"></i> ' + label + '</button>';
@@ -208,9 +220,7 @@ $(document).ready(function () {
 
             var nombre = ((data.professional_name || '') + ' ' + (data.professional_surname || '') + ' ' + (data.professional_secondsurname || '')).trim().toUpperCase();
 
-            // NUEVO LAYOUT: Datos arriba (2 col), Botones en medio (horizontal), Visor abajo
             var html =
-                '' +
                 '<div class="row">' +
                     '<div class="col-md-6">' +
                         '<div class="card-detalle">' +
@@ -234,7 +244,6 @@ $(document).ready(function () {
                     '</div>' +
                 '</div>' +
 
-                '' +
                 '<div class="mt-2 mb-3">' +
                     '<h6 style="color:#0c315e; font-weight:700; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i> Documentos Adjuntos</h6>' +
                     '<div class="d-flex flex-wrap">' +
@@ -246,7 +255,6 @@ $(document).ready(function () {
                     '</div>' +
                 '</div>' +
                 
-                '' +
                 '<div class="row">' +
                     '<div class="col-12">' +
                         '<div class="pdf-viewer-container shadow-sm">' +
@@ -262,8 +270,19 @@ $(document).ready(function () {
 
             $('#modal-body-detalle').html(html);
             
+            // Lógica para el botón del Modal según el status
             if (data.status == 1) {
-                $('#btn-promover').data('id', id).show();
+                $('#btn-promover')
+                    .html('<i class="fa-solid fa-arrow-right"></i> Pasar a Creados')
+                    .removeClass('btn-warning').addClass('btn-success')
+                    .data('action-type', 'crear')
+                    .show();
+            } else if (data.status == 2) {
+                $('#btn-promover')
+                    .html('<i class="fa-solid fa-pen-to-square"></i> Editar Registro')
+                    .removeClass('btn-success').addClass('btn-warning')
+                    .data('action-type', 'editar')
+                    .show();
             } else {
                 $('#btn-promover').hide();
             }

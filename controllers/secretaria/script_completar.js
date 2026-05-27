@@ -33,7 +33,7 @@ $(document).ready(function() {
                 if (resp && resp.ok) {
                     bootbox.alert({
                         title: 'Éxito',
-                        message: 'El registro se ha completado y pasado a Creados.',
+                        message: 'El registro se ha guardado correctamente.',
                         callback: function() {
                             window.location.href = 'secretaria.php';
                         }
@@ -51,6 +51,10 @@ $(document).ready(function() {
     function cargarDatosAlumno() {
         $.post(CONTROLLER, { action: 11, id: id }, function(data) {
             if(data && !data.error) {
+                if (data.status == 2) {
+                    $('#btn-guardar').text('Guardar Cambios');
+                }
+
                 $('#professional_curp').val(data.professional_curp);
                 $('#professional_name').val(data.professional_name);
                 $('#professional_surname').val(data.professional_surname);
@@ -58,30 +62,47 @@ $(document).ready(function() {
                 $('#professional_email').val(data.professional_email);
                 $('#expedition_degreemodality').val(data.expedition_degreemodality);
                 $('#antecedent_document').val(data.antecedent_document);
+                $('#antecedent_institutionorigin').val(data.antecedent_institutionorigin);
 
                 if (data.course_startdate) {
                     $('#course_startdate').val(data.course_startdate.split(' ')[0]);
                 }
-                
                 if (data.expedition_dateprofessionalexam) {
                     $('#expedition_dateprofessionalexam').val(data.expedition_dateprofessionalexam.split(' ')[0]);
                 }
 
-                if (data.institution_cveinstitution) {
-                    $('#institution_cveinstitution').val(data.institution_cveinstitution);
+                if (data.controlinvoice) {
+                    $('#controlinvoice').val(data.controlinvoice);
+                }
+                if (data.course_finishdate) {
+                    $('#course_finishdate').val(data.course_finishdate.split(' ')[0]);
+                }
+                if (data.expedition_date) {
+                    $('#expedition_date').val(data.expedition_date.split(' ')[0]);
+                }
+                if (data.antecedent_finishdate) {
+                    $('#antecedent_finishdate').val(data.antecedent_finishdate.split(' ')[0]);
                 }
 
-                if (data.course_cvecourse) {
-                    $('#course_cvecourse').val(data.course_cvecourse);
-                }
+                setTimeout(function() {
+                    if (data.institution_cveinstitution) $('#institution_cveinstitution').val(data.institution_cveinstitution);
+                    if (data.course_cvecourse) $('#course_cvecourse').val(data.course_cvecourse);
+                    if (data.course_idreconnaissanceauthorization) $('#course_idreconnaissanceauthorization').val(data.course_idreconnaissanceauthorization);
+                    
+                    var valServicio = (data.expedition_socialservice == null || data.expedition_socialservice === '') ? '0' : data.expedition_socialservice;
+                    $('#expedition_socialservice').val(valServicio);
+                    
+                    if (data.expedition_idlegalbasissocialservice) $('#expedition_idlegalbasissocialservice').val(data.expedition_idlegalbasissocialservice);
+                    if (data.expedition_idstate) $('#expedition_idstate').val(data.expedition_idstate);
+                    
+                    if (data.antecedent_idtypestudy) {
+                        $('#antecedent_idtypestudy').val(data.antecedent_idtypestudy);
+                        var tipoPrograma = (data.antecedent_idtypestudy == 2) ? 1 : 2;
+                        $('#course_type').val(tipoPrograma);
+                    }
 
-                if (data.expedition_idstate) {
-                    $('#expedition_idstate').val(data.expedition_idstate);
-                }
-
-                if (data.antecedent_idstate) {
-                    $('#antecedent_idstate').val(data.antecedent_idstate);
-                }
+                    if (data.antecedent_idstate) $('#antecedent_idstate').val(data.antecedent_idstate);
+                }, 150);
             }
         }, 'json');
     }

@@ -21,7 +21,43 @@ if (!isset($_SESSION['user_name'])) {
            SISTE — Estilos rediseño visual
            Sistema de Titulación Electrónica
            ============================================ */
+          /* --- Botón editar en tabla --- */
+        .btn-editar {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #2a5298;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
 
+        .btn-editar:hover {
+            background: #1a3a6b;
+        }
+
+        /* --- Botón ver en tabla (NUEVO) --- */
+        .btn-ver {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: #17a2b8;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-ver:hover {
+            background: #138496;
+        }
         /* --- Navbar --- */
         .navbar {
             background: #1a3a6b;
