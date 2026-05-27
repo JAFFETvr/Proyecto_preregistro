@@ -17,341 +17,343 @@ if (!isset($_SESSION['user_name'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="../../assets/css/estilos.css"> 
     <style>
-        /* ============================================
-           SISTE — Estilos rediseño visual
-           Sistema de Titulación Electrónica
-           ============================================ */
-          /* --- Botón editar en tabla --- */
-        .btn-editar {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: #2a5298;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 14px;
+        :root {
+            --gov-blue: #0b3b6f;
+            --gov-blue-dark: #07294d;
+            --gov-blue-light: #e8eff8;
+            --gov-border: #d6deea;
+            --gov-bg: #f4f6f8;
+            --gov-text: #1f2a37;
+            --gov-muted: #5f6b7a;
         }
 
-        .btn-editar:hover {
-            background: #1a3a6b;
+        .gov-secretaria {
+            background: var(--gov-bg);
+            color: var(--gov-text);
+            font-family: "Segoe UI", "Noto Sans", system-ui, sans-serif;
         }
 
-        /* --- Botón ver en tabla (NUEVO) --- */
-        .btn-ver {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: #17a2b8;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 14px;
+        .gov-secretaria .gov-navbar {
+            background: var(--gov-blue);
+            border-bottom: 3px solid var(--gov-blue-dark);
+            padding: 10px 0;
         }
 
-        .btn-ver:hover {
-            background: #138496;
-        }
-        /* --- Navbar --- */
-        .navbar {
-            background: #1a3a6b;
-            padding: 0 24px;
+        .gov-secretaria .gov-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 56px;
+            gap: 24px;
         }
 
-        .navbar-brand img {
-            height: 36px;
-        }
-
-        .navbar-title {
-            color: #fff;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .navbar-user {
+        .gov-secretaria .gov-brand {
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: #c9d8f0;
-            font-size: 13px;
+            gap: 12px;
+        }
+
+        .gov-secretaria .gov-brand img {
+            height: 50px;
+        }
+
+        .gov-secretaria .gov-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .gov-secretaria .gov-subtitle {
+            color: #c6d2e3;
+            font-size: 0.72rem;
+        }
+
+        .gov-secretaria .gov-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e7edf6;
+            font-size: 0.85rem;
+        }
+
+        .gov-secretaria .gov-user #btnLogout {
+            color: #e7edf6;
             cursor: pointer;
         }
 
-        .navbar-user #btnLogout {
-            color: #c9d8f0;
-            cursor: pointer;
+        .gov-secretaria .gov-user #btnLogout:hover {
+            color: #ffffff;
         }
 
-        .navbar-user #btnLogout:hover {
-            color: #fff;
+        .gov-secretaria .main-content {
+            padding: 26px 0 32px;
+            min-height: calc(100vh - 74px);
         }
 
-        /* --- Fondo general --- */
-        .main-content {
-            padding: 24px;
-            background: #f4f6fb;
-            min-height: calc(100vh - 56px);
+        .gov-secretaria .page-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--gov-blue);
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
-        /* --- Título de página --- */
-        .page-title {
-            font-size: 16px;
-            font-weight: 500;
-            color: #1a3a6b;
-            margin-bottom: 16px;
-        }
-
-        /* --- Tarjetas de métricas --- */
-        .stats-grid {
+        .gov-secretaria .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
         }
 
-        .stat-card {
-            background: #fff;
-            border-radius: 10px;
-            border: 0.5px solid rgba(0, 0, 0, 0.08);
-            padding: 12px 14px;
+        .gov-secretaria .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--gov-border);
+            border-left: 4px solid var(--gov-blue);
+            border-radius: 8px;
+            padding: 14px 16px;
         }
 
-        .stat-card .stat-label {
-            font-size: 11px;
-            color: #6b7280;
+        .gov-secretaria .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: var(--gov-muted);
             margin-bottom: 4px;
         }
 
-        .stat-card .stat-value {
-            font-size: 22px;
-            font-weight: 500;
-            color: #1a3a6b;
+        .gov-secretaria .stat-card .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gov-blue);
         }
 
-        .stat-card .stat-sub {
-            font-size: 11px;
-            color: #2e7d4f;
+        .gov-secretaria .stat-card .stat-sub {
+            font-size: 0.72rem;
+            color: #2f6b3f;
             margin-top: 2px;
         }
 
-        /* --- Tabs de estado --- */
-        .status-tabs {
+        .gov-secretaria .status-tabs {
             display: flex;
-            gap: 4px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 18px;
             flex-wrap: wrap;
         }
 
-        .status-tabs .tab {
-            padding: 7px 14px;
+        .gov-secretaria .status-tabs .tab {
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.78rem;
             cursor: pointer;
-            border: 0.5px solid transparent;
+            border: 1px solid var(--gov-border);
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #6b7280;
+            color: var(--gov-muted);
             text-decoration: none;
-            background: transparent;
+            background: #ffffff;
         }
 
-        .status-tabs .tab:hover {
-            background: #e8edf8;
+        .gov-secretaria .status-tabs .tab:hover {
+            border-color: var(--gov-blue);
+            color: var(--gov-blue);
         }
 
-        .status-tabs .tab.active {
-            background: #1a3a6b;
-            color: #fff;
+        .gov-secretaria .status-tabs .tab.active {
+            background: var(--gov-blue);
+            color: #ffffff;
+            border-color: var(--gov-blue);
         }
 
-        .status-tabs .tab .badge {
-            font-size: 10px;
-            padding: 1px 6px;
+        .gov-secretaria .status-tabs .tab .badge {
+            font-size: 0.7rem;
+            padding: 2px 7px;
             border-radius: 10px;
-            font-weight: 500;
-            background: #e0e6f5;
-            color: #1a3a6b;
+            font-weight: 600;
+            background: var(--gov-blue-light);
+            color: var(--gov-blue);
         }
 
-        .status-tabs .tab.active .badge {
+        .gov-secretaria .status-tabs .tab.active .badge {
             background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            color: #ffffff;
         }
 
-        /* --- Barra de herramientas (botón + buscador) --- */
-        .toolbar {
+        .gov-secretaria .toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .toolbar-left {
+        .gov-secretaria .toolbar-left {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .toolbar .count-label {
-            font-size: 12px;
-            color: #6b7280;
+        .gov-secretaria .toolbar .count-label {
+            font-size: 0.78rem;
+            color: var(--gov-muted);
         }
 
-        /* --- Botón Nuevo Registro (SIEMPRE VERDE) --- */
-        .btn-nuevo-registro {
-            background: #2e7d4f !important;
+        .gov-secretaria .btn-nuevo-registro {
+            background: var(--gov-blue) !important;
             color: #fff !important;
             border: none !important;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 0.82rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
         }
 
-        .btn-nuevo-registro:hover {
-            background: #245f3d !important;
-            color: #fff !important;
+        .gov-secretaria .btn-nuevo-registro:hover {
+            background: var(--gov-blue-dark) !important;
         }
 
-        /* --- Buscador --- */
-        .buscador {
+        .gov-secretaria .buscador {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #fff;
-            border: 1.5px solid #dbe5f0;
-            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid var(--gov-border);
+            border-radius: 6px;
             padding: 7px 12px;
-            width: 220px;
+            width: 240px;
         }
 
-        .buscador:focus-within {
-            border-color: #2e7d4f;
+        .gov-secretaria .buscador:focus-within {
+            border-color: var(--gov-blue);
         }
 
-        .buscador .icono-buscar {
-            font-size: 15px;
-            color: #1a3a6b;
+        .gov-secretaria .buscador .icono-buscar {
+            font-size: 0.95rem;
+            color: var(--gov-blue);
             flex-shrink: 0;
         }
 
-        .buscador input {
+        .gov-secretaria .buscador input {
             border: none;
             outline: none;
-            font-size: 13px;
-            color: #1f2937;
+            font-size: 0.82rem;
+            color: var(--gov-text);
             background: #fff;
             width: 100%;
         }
 
-        .buscador input::placeholder {
+        .gov-secretaria .buscador input::placeholder {
             color: #9aa4b2;
         }
 
-        /* --- Tabla de expedientes --- */
-        .tabla-expedientes {
+        .gov-secretaria .tabla-expedientes {
             background: #fff;
-            border-radius: 12px;
-            border: 0.5px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            border: 1px solid var(--gov-border);
             overflow: hidden;
             width: 100%;
             border-collapse: collapse;
         }
 
-        .tabla-expedientes thead {
-            background: #1a3a6b;
+        .gov-secretaria .tabla-expedientes thead {
+            background: var(--gov-blue-light);
         }
 
-        .tabla-expedientes thead th {
-            font-size: 11px;
-            font-weight: 500;
-            color: #c9d8f0;
+        .gov-secretaria .tabla-expedientes thead th {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--gov-blue);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 10px 16px;
+            letter-spacing: 0.08em;
+            padding: 12px 16px;
             text-align: left;
         }
 
-        .tabla-expedientes tbody tr {
-            border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+        .gov-secretaria .tabla-expedientes tbody tr {
+            border-bottom: 1px solid var(--gov-border);
             cursor: pointer;
             transition: background 0.15s;
         }
 
-        .tabla-expedientes tbody tr:last-child {
+        .gov-secretaria .tabla-expedientes tbody tr:last-child {
             border-bottom: none;
         }
 
-        .tabla-expedientes tbody tr:hover {
-            background: #f0f4fb;
+        .gov-secretaria .tabla-expedientes tbody tr:hover {
+            background: #f7f9fc;
         }
 
-        .tabla-expedientes tbody td {
+        .gov-secretaria .tabla-expedientes tbody tr.row-selected {
+            background: #e3ecf9;
+        }
+
+        .gov-secretaria .tabla-expedientes tbody td {
             padding: 12px 16px;
-            font-size: 13px;
+            font-size: 0.85rem;
             color: #374151;
         }
 
-        /* --- Avatar con iniciales --- */
-        .avatar-iniciales {
+        .gov-secretaria .avatar-iniciales {
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #d6e4f7;
+            background: var(--gov-blue-light);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            font-weight: 500;
-            color: #0c447c;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--gov-blue);
             flex-shrink: 0;
             margin-right: 8px;
             vertical-align: middle;
         }
 
-        /* --- Chip de fecha --- */
-        .chip-fecha {
-            font-size: 12px;
-            color: #0c447c;
-            background: #e8edf8;
+        .gov-secretaria .chip-fecha {
+            font-size: 0.75rem;
+            color: var(--gov-blue);
+            background: var(--gov-blue-light);
             padding: 3px 10px;
             border-radius: 12px;
             display: inline-block;
         }
 
-        /* --- Botón editar en tabla --- */
-        .btn-editar {
+        .gov-secretaria .btn-editar,
+        .gov-secretaria .btn-ver {
             width: 30px;
             height: 30px;
-            border-radius: 8px;
-            background: #2a5298;
+            border-radius: 6px;
+            background: var(--gov-blue);
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 14px;
+            font-size: 0.85rem;
         }
 
-        .btn-editar:hover {
-            background: #1a3a6b;
+        .gov-secretaria .btn-ver {
+            background: #1a5da8;
+        }
+
+        .gov-secretaria .btn-editar:hover,
+        .gov-secretaria .btn-ver:hover {
+            background: var(--gov-blue-dark);
+        }
+
+        .gov-secretaria .btn.btn-success {
+            background: var(--gov-blue);
+            border-color: var(--gov-blue);
+        }
+
+        .gov-secretaria .btn.btn-success:hover {
+            background: var(--gov-blue-dark);
+            border-color: var(--gov-blue-dark);
         }
 
         #loading-overlay {
@@ -368,21 +370,26 @@ if (!isset($_SESSION['user_name'])) {
         }
     </style>
 </head>
-<body>
+<body class="gov-secretaria">
 
-<nav class="navbar">
-    <div class="navbar-brand">
-        <img src="../../assets/images/siste_4.png" alt="SISTE">
-    </div>
-    <div class="navbar-title">Sistema de Titulación Electrónica</div>
-    <?php if (isset($_SESSION['user_name'])): ?>
-        <div class="navbar-user">
-            <i class="fas fa-user" aria-hidden="true"></i>
-            <span id="username"><?php echo $_SESSION['user_name']; ?></span>
-            <span>|</span>
-            <span id="btnLogout">Cerrar sesión</span>
+<nav class="navbar gov-navbar">
+    <div class="container gov-nav">
+        <div class="gov-brand">
+            <img src="../../assets/images/siste_4.png" alt="SISTE">
+            <div class="gov-brand-text">
+                <div class="gov-title">Sistema de Titulación Electrónica</div>
+                <div class="gov-subtitle">Gobierno de México — INAE</div>
+            </div>
         </div>
-    <?php endif; ?>
+        <?php if (isset($_SESSION['user_name'])): ?>
+            <div class="gov-user">
+                <i class="fas fa-user" aria-hidden="true"></i>
+                <span id="username"><?php echo $_SESSION['user_name']; ?></span>
+                <span>|</span>
+                <span id="btnLogout">Cerrar sesión</span>
+            </div>
+        <?php endif; ?>
+    </div>
 </nav>
 
 <div id="loading-overlay">
@@ -437,7 +444,7 @@ if (!isset($_SESSION['user_name'])) {
 
         <div class="toolbar">
             <div class="toolbar-left">
-                <button class="btn-nuevo-registro">NUEVO REGISTRO</button>
+                <button class="btn-nuevo-registro" id="btn-nuevo-registro">NUEVO REGISTRO</button>
                 <span class="count-label" id="count-total">0 registros</span>
             </div>
             <div class="buscador">

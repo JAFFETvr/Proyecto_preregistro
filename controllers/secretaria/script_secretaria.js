@@ -23,7 +23,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#search-alumno').on('input', function () {
+    $('#search-alumno').on('input keyup change', function () {
         filtroActual = ($(this).val() || '').trim().toLowerCase();
         aplicarFiltro();
     });
@@ -48,10 +48,33 @@ $(document).ready(function () {
         });
     });
 
-    // Escuchar tanto al botón de VER como al de EDITAR
-    $(document).on('click', '.btn-editar, .btn-ver', function () {
+    // Seleccionar fila
+    $(document).on('click', '#tbody-registros tr', function (e) {
+        if ($(e.target).closest('button').length) return;
         var id = $(this).data('id');
+        if (!id) return;
+        seleccionarRegistro(id);
+    });
+
+    // Escuchar tanto al botón de VER como al de EDITAR
+    $(document).on('click', '.btn-editar, .btn-ver', function (e) {
+        e.stopPropagation();
+        var id = $(this).data('id');
+        if (id) seleccionarRegistro(id);
         abrirDetalle(id);
+    });
+
+    $('#btn-nuevo-registro').on('click', function () {
+        if (!idSeleccionado) {
+            bootbox.alert({ title: 'Selecciona un alumno', message: 'Da clic en un alumno de la lista para continuar.' });
+            return;
+        }
+        var registro = obtenerRegistroPorId(idSeleccionado);
+        if (!registro || registro.status != 1) {
+            bootbox.alert({ title: 'Registro no válido', message: 'Selecciona un alumno en Pre-registrados para completar su registro.' });
+            return;
+        }
+        confirmarAccion('crear');
     });
 
     $(document).on('click', '.btn-view-pdf', function() {
@@ -65,26 +88,8 @@ $(document).ready(function () {
 
     $('#btn-promover').on('click', function () {
         if (!idSeleccionado) return;
-        
         var actionType = $(this).data('action-type');
-        var titleMsg = (actionType === 'crear') ? "Completar Registro" : "Editar Registro";
-        var bodyMsg = (actionType === 'crear') 
-            ? "¿Deseas ir al formulario para completar los datos administrativos de este alumno?" 
-            : "¿Deseas modificar los datos administrativos de este registro?";
-            
-        bootbox.confirm({
-            title: titleMsg,
-            message: bodyMsg,
-            buttons: {
-                confirm: { label: 'Sí, continuar', className: (actionType === 'crear') ? 'btn-success' : 'btn-warning' },
-                cancel:  { label: 'Cancelar', className: 'btn-secondary' }
-            },
-            callback: function (result) {
-                if (result) {
-                    window.location.href = 'completar_registro.php?id=' + idSeleccionado;
-                }
-            }
-        });
+        confirmarAccion(actionType);
     });
 
     function cargarDatos(status) {
@@ -140,7 +145,7 @@ $(document).ready(function () {
             var btnClass = (r.status == 1) ? 'btn-ver' : 'btn-editar';
             var titleTooltip = (r.status == 1) ? 'Ver pre-registro' : 'Editar registro';
 
-            html += '<tr>' +
+            html += '<tr data-id="' + r.id_titledata + '" data-status="' + r.status + '">' +
                 '<td><span class="avatar-iniciales">' + iniciales + '</span>' + nombre + '</td>' +
                 '<td>' + programa + '</td>' +
                 '<td class="text-center"><span class="chip-fecha">' + fecha + '</span></td>' +
@@ -179,6 +184,38 @@ $(document).ready(function () {
         });
 
         renderTabla(filtrados);
+    }
+
+    function seleccionarRegistro(id) {
+        idSeleccionado = id;
+        $('#tbody-registros tr').removeClass('row-selected');
+        $('#tbody-registros tr[data-id="' + id + '"]').addClass('row-selected');
+    }
+
+    function obtenerRegistroPorId(id) {
+        if (!registrosData || !registrosData.length) return null;
+        return registrosData.find(function (r) { return String(r.id_titledata) === String(id); }) || null;
+    }
+
+    function confirmarAccion(actionType) {
+        var titleMsg = (actionType === 'crear') ? "Completar Registro" : "Editar Registro";
+        var bodyMsg = (actionType === 'crear')
+            ? "¿Deseas ir al formulario para completar los datos administrativos de este alumno?"
+            : "¿Deseas modificar los datos administrativos de este registro?";
+
+        bootbox.confirm({
+            title: titleMsg,
+            message: bodyMsg,
+            buttons: {
+                confirm: { label: 'Sí, continuar', className: (actionType === 'crear') ? 'btn-success' : 'btn-warning' },
+                cancel:  { label: 'Cancelar', className: 'btn-secondary' }
+            },
+            callback: function (result) {
+                if (result) {
+                    window.location.href = 'completar_registro.php?id=' + idSeleccionado;
+                }
+            }
+        });
     }
 
     function obtenerDatosTab() {

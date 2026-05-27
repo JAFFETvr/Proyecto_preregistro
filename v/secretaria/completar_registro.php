@@ -22,14 +22,25 @@ if ($id_titledata === 0) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="../../assets/css/estilos.css">
     <style>
+        :root {
+            --gov-blue: #0b3b6f;
+            --gov-blue-dark: #07294d;
+            --gov-blue-light: #e8eff8;
+            --gov-border: #d6deea;
+            --gov-bg: #f4f6f8;
+            --gov-text: #1f2a37;
+            --gov-muted: #5f6b7a;
+        }
+
         .completar-registro {
-            background: #f3f5f7;
-            color: #2d3748;
+            background: var(--gov-bg);
+            color: var(--gov-text);
+            font-family: "Segoe UI", "Noto Sans", system-ui, sans-serif;
         }
 
         .completar-registro .bg-nav {
-            background: #0f2f5d !important;
-            border-bottom: 1px solid #0b2447;
+            background: var(--gov-blue) !important;
+            border-bottom: 3px solid var(--gov-blue-dark);
         }
 
         .completar-registro .completar-nav {
@@ -61,7 +72,7 @@ if ($id_titledata === 0) {
         }
 
         .completar-registro .nav-subtitle {
-            color: #c8d4e8;
+            color: #c6d2e3;
             font-size: 0.72rem;
         }
 
@@ -73,7 +84,7 @@ if ($id_titledata === 0) {
             display: flex;
             align-items: flex-start;
             gap: 0;
-            margin: 10px 0 24px;
+            margin: 12px 0 24px;
         }
 
         .completar-registro .step {
@@ -81,7 +92,7 @@ if ($id_titledata === 0) {
             flex: 1;
             text-align: center;
             font-size: 0.78rem;
-            color: #8a94a6;
+            color: var(--gov-muted);
         }
 
         .completar-registro .step:after {
@@ -91,7 +102,7 @@ if ($id_titledata === 0) {
             right: -50%;
             width: 100%;
             height: 1px;
-            background: #d7dee8;
+            background: var(--gov-border);
         }
 
         .completar-registro .step:last-child:after {
@@ -118,21 +129,20 @@ if ($id_titledata === 0) {
         }
 
         .completar-registro .step.active {
-            color: #1b4d9b;
+            color: var(--gov-blue);
             font-weight: 600;
         }
 
         .completar-registro .step.active .step-circle {
-            background: #1b4d9b;
+            background: var(--gov-blue);
             color: #ffffff;
         }
 
         .completar-registro .section-card {
             background: #ffffff;
-            border: 1px solid #e1e6ee;
-            border-radius: 12px;
+            border: 1px solid var(--gov-border);
+            border-radius: 10px;
             margin-bottom: 18px;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.03);
         }
 
         .completar-registro .section-header {
@@ -145,14 +155,14 @@ if ($id_titledata === 0) {
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
-            background: #e8f1ff;
-            color: #1b4d9b;
+            background: var(--gov-blue-light);
+            color: var(--gov-blue);
             border-radius: 6px;
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            border-left: 3px solid #1b4d9b;
+            border-left: 3px solid var(--gov-blue);
         }
 
         .completar-registro .section-body {
@@ -166,15 +176,15 @@ if ($id_titledata === 0) {
         }
 
         .completar-registro .form-control {
-            border-radius: 8px;
-            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            border: 1px solid var(--gov-border);
             padding: 0.55rem 0.75rem;
             font-size: 0.9rem;
         }
 
         .completar-registro .form-control:focus {
-            border-color: #1b4d9b;
-            box-shadow: 0 0 0 0.2rem rgba(27,77,155,0.12);
+            border-color: var(--gov-blue);
+            box-shadow: 0 0 0 0.2rem rgba(11, 59, 111, 0.12);
         }
 
         .completar-registro .form-actions {
@@ -185,26 +195,26 @@ if ($id_titledata === 0) {
         }
 
         .completar-registro .form-actions .btn {
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 0.55rem 1.7rem;
             font-weight: 600;
         }
 
         .completar-registro .form-actions .btn-secondary {
-            background: #eef2f6 !important;
-            border: 1px solid #dbe2ec !important;
-            color: #7a8796 !important;
+            background: #ffffff !important;
+            border: 1px solid var(--gov-border) !important;
+            color: var(--gov-blue) !important;
         }
 
         .completar-registro .form-actions .btn-success {
-            background: #e9edf3 !important;
-            border: 1px solid #e9edf3 !important;
-            color: #9aa5b1 !important;
+            background: var(--gov-blue) !important;
+            border: 1px solid var(--gov-blue) !important;
+            color: #ffffff !important;
         }
 
         .completar-registro .form-actions .btn-success:hover {
-            background: #dbe4f2 !important;
-            color: #5b6b7a !important;
+            background: var(--gov-blue-dark) !important;
+            color: #ffffff !important;
         }
     </style>
 </head>
