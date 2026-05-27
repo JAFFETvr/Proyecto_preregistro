@@ -3,6 +3,7 @@ $(document).ready(function () {
     var registrosData = [];
     var idSeleccionado = null;
     var tabActual = 'preregistrados';
+    var filtroActual = '';
     var CONTROLLER = '../../controllers/preregistro/controller_preregistro.php';
     var LOGIN_CONTROLLER = '../../controllers/signin/controller_login.php';
 
@@ -20,6 +21,11 @@ $(document).ready(function () {
         } else {
             $('#tbody-registros').html('<tr><td colspan="4" class="text-center text-muted py-4">Sin registros en esta sección.</td></tr>');
         }
+    });
+
+    $('#search-alumno').on('input', function () {
+        filtroActual = ($(this).val() || '').trim().toLowerCase();
+        aplicarFiltro();
     });
 
     $('#btnLogout').on('click', function () {
@@ -42,7 +48,7 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('click', '.btn-accion-naranja', function () {
+    $(document).on('click', '.btn-editar', function () {
         var id = $(this).data('id');
         abrirDetalle(id);
     });
@@ -58,34 +64,21 @@ $(document).ready(function () {
     });
 
     $('#btn-promover').on('click', function () {
-        if (!idSeleccionado) return;
-        bootbox.confirm({
-            title: "Confirmar acción",
-            message: "¿Deseas pasar este pre-registro a <strong>Creados</strong> para iniciar el proceso de titulación?",
-            buttons: {
-                confirm: { label: 'Sí, crear registro', className: 'btn-success' },
-                cancel:  { label: 'Cancelar', className: 'btn-secondary' }
-            },
-            callback: function (result) {
-                if (!result) return;
-                mostrarLoading(true);
-                $.post(CONTROLLER, { action: 12, prereg_id: idSeleccionado, id_titledata: idSeleccionado }, function (resp) {
-                    mostrarLoading(false);
-                    $('#modalDetalle').modal('hide');
-                    if (resp && resp.ok) {
-                        cargarDatos(1);
-                        actualizarConteoTabs();
-                    } else {
-                        bootbox.alert({ title: 'Error', message: 'No se pudo actualizar el estado.' });
-                    }
-                }, 'json').fail(function () {
-                    mostrarLoading(false);
-                    bootbox.alert({ title: 'Error', message: 'Error de conexión con el servidor.' });
-                });
+    if (!idSeleccionado) return;
+    bootbox.confirm({
+        title: "Completar Registro",
+        message: "¿Deseas ir al formulario para completar los datos administrativos de este alumno?",
+        buttons: {
+            confirm: { label: 'Sí, ir al formulario', className: 'btn-success' },
+            cancel:  { label: 'Cancelar', className: 'btn-secondary' }
+        },
+        callback: function (result) {
+            if (result) {
+                window.location.href = 'completar_registro.php?id=' + idSeleccionado;
             }
-        });
+        }
     });
-
+});
     function cargarDatos(status) {
         mostrarLoading(true);
         $('#tbody-registros').html('<tr><td colspan="4" class="text-center text-muted py-4"><i class="fa-solid fa-spinner fa-spin"></i> Cargando...</td></tr>');
@@ -99,9 +92,9 @@ $(document).ready(function () {
             
             $('#count-pre').text(pre.length);
             $('#count-creados').text(creados.length);
+            $('#stat-pre').text(pre.length);
             
-            if (status === 1) renderTabla(pre);
-            if (status === 2) renderTabla(creados);
+            aplicarFiltro();
             
         }, 'json').fail(function () {
             mostrarLoading(false);
@@ -123,6 +116,7 @@ $(document).ready(function () {
     function renderTabla(datos) {
         if (!datos || datos.length === 0) {
             $('#tbody-registros').html('<tr><td colspan="4" class="text-center text-muted py-4">No hay registros en esta sección.</td></tr>');
+            $('#count-total').text('0 registros');
             return;
         }
 
@@ -131,19 +125,68 @@ $(document).ready(function () {
             var nombre = ((r.professional_name || '') + ' ' + (r.professional_surname || '') + ' ' + (r.professional_secondsurname || '')).trim().toUpperCase();
             var programa = (r.course_name || '').toUpperCase();
             var fecha = (r.fecha_registro || '').split(' ')[0]; 
+            var iniciales = obtenerIniciales(r.professional_name, r.professional_surname);
 
             html += '<tr>' +
-                '<td style="color:#333;">' + nombre + '</td>' +
-                '<td style="color:#333;">' + programa + '</td>' +
-                '<td class="text-center" style="color:#4b6cb7;">' + fecha + '</td>' +
+                '<td><span class="avatar-iniciales">' + iniciales + '</span>' + nombre + '</td>' +
+                '<td>' + programa + '</td>' +
+                '<td class="text-center"><span class="chip-fecha">' + fecha + '</span></td>' +
                 '<td class="text-center">' +
-                    '<button class="btn-accion-naranja" data-id="' + r.id_titledata + '">' +
+                    '<button class="btn-editar" data-id="' + r.id_titledata + '">' +
                     '<i class="fa-solid fa-pen-to-square"></i></button>' +
                 '</td>' +
             '</tr>';
         });
 
         $('#tbody-registros').html(html);
+        $('#count-total').text(datos.length + ' registros');
+    }
+
+    function aplicarFiltro() {
+        var datos = obtenerDatosTab();
+        if (!datos.length) {
+            renderTabla([]);
+            return;
+        }
+
+        if (!filtroActual) {
+            renderTabla(datos);
+            return;
+        }
+
+        var filtrados = datos.filter(function (r) {
+            var nombreCompleto = ((r.professional_name || '') + ' ' + (r.professional_surname || '') + ' ' + (r.professional_secondsurname || '')).toLowerCase();
+            var programa = (r.course_name || '').toLowerCase();
+            var folio = (r.controlinvoice || '').toString().toLowerCase();
+            return (
+                nombreCompleto.includes(filtroActual) ||
+                programa.includes(filtroActual) ||
+                folio.includes(filtroActual)
+            );
+        });
+
+        renderTabla(filtrados);
+    }
+
+    function obtenerDatosTab() {
+        if (tabActual === 'preregistrados') {
+            return registrosData.filter(function(r) { return r.status == 1; });
+        }
+        if (tabActual === 'creados') {
+            return registrosData.filter(function(r) { return r.status == 2; });
+        }
+        return [];
+    }
+
+    function obtenerIniciales(nombre, apellido) {
+        var ini = '';
+        if (nombre) {
+            ini += nombre.trim().charAt(0);
+        }
+        if (apellido) {
+            ini += apellido.trim().charAt(0);
+        }
+        return ini.toUpperCase();
     }
 
     // Botones rediseñados para no depender de Bootstrap

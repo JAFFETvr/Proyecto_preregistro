@@ -522,5 +522,49 @@ class actualizar{
         }
 
         return $errores;
+    
+    }
+
+    public function updateRegistroAdministrativo($id_titledata, $datos) {
+        $con = new DBconnection();
+        $con->openDB();
+        $db = $con->getConn();
+
+        $str = fn($v) => ($v !== null && $v !== '') ? "'" . pg_escape_string($db, trim($v)) . "'" : "NULL";
+        $int = fn($v) => ($v !== null && $v !== '' && (int)$v > 0) ? (int)$v : 'NULL';
+        $dt  = fn($v) => ($v !== null && $v !== '') ? "'" . pg_escape_string($db, $v) . "'" : 'NULL';
+
+        $sql = "UPDATE titledata SET 
+            controlinvoice = " . $str($datos['controlinvoice']) . ",
+            institution_cveinstitution = " . $int($datos['institution_cveinstitution']) . ",
+            institution_nameinstitution = " . $str($datos['institution_nameinstitution']) . ",
+            course_finishdate = " . $dt($datos['course_finishdate']) . ",
+            course_idreconnaissanceauthorization = " . $int($datos['course_idreconnaissanceauthorization']) . ",
+            course_reconnaissanceauthorization = " . $str($datos['course_reconnaissanceauthorization']) . ",
+            expedition_date = " . $dt($datos['expedition_date']) . ",
+            expedition_socialservice = " . $int($datos['expedition_socialservice']) . ",
+            expedition_idlegalbasissocialservice = " . $int($datos['expedition_idlegalbasissocialservice']) . ",
+            expedition_legalbasissocialservice = " . $str($datos['expedition_legalbasissocialservice']) . ",
+            expedition_idstate = " . $str($datos['expedition_idstate']) . ",
+            expedition_state = " . $str($datos['expedition_state']) . ",
+            antecedent_institutionorigin = " . $str($datos['antecedent_institutionorigin']) . ",
+            antecedent_idtypestudy = " . $int($datos['antecedent_idtypestudy']) . ",
+            antecedent_typestudy = " . $str($datos['antecedent_typestudy']) . ",
+            antecedent_idstate = " . $str($datos['antecedent_idstate']) . ",
+            antecedent_state = " . $str($datos['antecedent_state']) . ",
+            antecedent_finishdate = " . $dt($datos['antecedent_finishdate']) . ",
+            status = 2
+            WHERE id_titledata = " . (int)$id_titledata . "
+            RETURNING id_titledata";
+
+        $res = @$con->query($sql);
+        $con->closeDB();
+
+        if ($res) {
+            $row = pg_fetch_row($res);
+            if ($row) return true;
+        }
+        return false;
     }
 }
+
