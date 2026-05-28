@@ -1,43 +1,67 @@
-const CONTROLLER_URL = (typeof window !== 'undefined' && window.CONTROLLER_URL)
-    ? window.CONTROLLER_URL
-    : '../../controllers/preregistro/controller_preregistro.php';
-
-const MAX_MB    = 10;
+const CONTROLLER_URL = (typeof window !== 'undefined' && window.CONTROLLER_URL) ? window.CONTROLLER_URL : '../../controllers/preregistro/controller_preregistro.php';
+const MAX_MB = 10;
 const MAX_BYTES = MAX_MB * 1024 * 1024;
 const EXT_VALIDAS = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
-
-const REGEX_EMAIL  = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-const REGEX_CURP   = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/;
-const REGEX_CED    = /^[0-9]{6,8}$/;
+const REGEX_EMAIL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+const REGEX_CED = /^[0-9]{6,8}$/;
 const REGEX_ACENTO = /[áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙäëïöüÄËÏÖÜâêîôûÂÊÎÔÛñÑ]/;
 
 function setError(fieldId, msg) {
-    const el = document.getElementById(fieldId);
+    let el = document.getElementById(fieldId);
+
+    // Si no encuentra el ID (ej. radio buttons), buscar por atributo name
+    if (!el) {
+        const radio = document.querySelector(`input[name="${fieldId}"]`);
+        if (radio) el = radio.closest('.opciones-radio');
+    }
+    
     if (!el) return;
+
     el.classList.add('is-invalid');
     el.classList.remove('is-valid');
+    
+    if (el.tagName && el.tagName.toLowerCase() === 'input' && el.type === 'file') {
+        const area = el.closest('.upload-area');
+        if (area) area.classList.add('is-invalid-file');
+    }
+
     let fb = document.getElementById('err-' + fieldId);
     if (!fb) {
         fb = document.createElement('div');
-        fb.id        = 'err-' + fieldId;
+        fb.id = 'err-' + fieldId;
         fb.className = 'invalid-feedback';
         el.parentNode.appendChild(fb);
     }
-    fb.textContent  = msg;
+    fb.textContent = msg;
     fb.style.display = 'block';
 }
 
 function clearError(fieldId) {
-    const el = document.getElementById(fieldId);
+    let el = document.getElementById(fieldId);
+
+    // Si no encuentra el ID (ej. radio buttons), buscar por atributo name
+    if (!el) {
+        const radio = document.querySelector(`input[name="${fieldId}"]`);
+        if (radio) el = radio.closest('.opciones-radio');
+    }
+
     if (!el) return;
+
     el.classList.remove('is-invalid');
     el.classList.add('is-valid');
+    
+    if (el.tagName && el.tagName.toLowerCase() === 'input' && el.type === 'file') {
+        const area = el.closest('.upload-area');
+        if (area) area.classList.remove('is-invalid-file');
+    }
+
     const fb = document.getElementById('err-' + fieldId);
     if (fb) { fb.textContent = ''; fb.style.display = 'none'; }
 }
 
 function resetValidation() {
     document.querySelectorAll('.is-invalid, .is-valid').forEach(el => el.classList.remove('is-invalid', 'is-valid'));
+    document.querySelectorAll('.is-invalid-file').forEach(el => el.classList.remove('is-invalid-file'));
     document.querySelectorAll('.invalid-feedback').forEach(el => { el.textContent = ''; el.style.display = 'none'; });
 }
 
@@ -57,7 +81,7 @@ function toggleCurp() {
     } else {
         if (bloqueCurp) bloqueCurp.style.display = 'none';
         if (inputCurp) { inputCurp.value = ''; }
-        if (inputArch) { inputArch.value = ''; document.getElementById('nombre-archivo_curp').innerHTML = ''; }
+        if (inputArch) { window.quitarArchivo('archivo_curp'); }
         clearError('professional_curp');
         clearError('archivo_curp');
     }
@@ -68,16 +92,20 @@ function validarArchivo(inputId) {
     if (!input || !input.files.length) return true;
 
     const file = input.files[0];
-    const ext  = file.name.split('.').pop().toLowerCase();
+    const ext = file.name.split('.').pop().toLowerCase();
 
     if (!EXT_VALIDAS.includes(ext)) {
         setError(inputId, 'Solo se aceptan archivos PDF, JPG o PNG.');
         input.value = '';
+        const nombreEl = document.getElementById('nombre-' + inputId);
+        if(nombreEl) nombreEl.innerHTML = '';
         return false;
     }
     if (file.size > MAX_BYTES) {
-        setError(inputId, `El archivo no debe superar ${MAX_MB} MB.`);
+        setError(inputId, `El archivo pesa ${(file.size/1024/1024).toFixed(2)} MB. No debe superar ${MAX_MB} MB.`);
         input.value = '';
+        const nombreEl = document.getElementById('nombre-' + inputId);
+        if(nombreEl) nombreEl.innerHTML = '';
         return false;
     }
     clearError(inputId);
@@ -87,6 +115,14 @@ function validarArchivo(inputId) {
 function quitarAcentos(str) {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
+
+window.quitarArchivo = function(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = '';
+        input.dispatchEvent(new Event('change'));
+    }
+};
 
 function validarFormulario() {
     let valido = true;
@@ -119,7 +155,7 @@ function validarFormulario() {
     if (nac === 'Mexicana') {
         const curp = document.getElementById('professional_curp').value.trim().toUpperCase();
         if (!curp) { setError('professional_curp', 'El CURP es obligatorio para ciudadanos mexicanos.'); valido = false; }
-        else if (!REGEX_CURP.test(curp)) { setError('professional_curp', 'El CURP no tiene el formato correcto (18 caracteres válidos).'); valido = false; }
+        else if (curp.length !== 18) { setError('professional_curp', 'El CURP debe tener exactamente 18 caracteres.'); valido = false; }
         else { clearError('professional_curp'); }
 
         const archCurp = document.getElementById('archivo_curp');
@@ -190,6 +226,7 @@ function showStep(step) {
 }
 
 function avanzarPaso(actual, siguiente) {
+    // Ya no validamos aquí, el usuario puede avanzar libremente
     showStep(siguiente);
 }
 
@@ -198,12 +235,14 @@ function retrocederPaso(anterior) {
 }
 
 function finalizarFormulario() {
+    // Al intentar enviar, obligamos al formulario a procesarse (ahí se valida todo)
     document.getElementById('form-preregistro').dispatchEvent(new Event('submit', { cancelable: true }));
 }
 
 function enviarFormulario(e) {
     e.preventDefault();
 
+    // 1. Validar campos
     if (!validarFormulario()) {
         const primerError = document.querySelector('.is-invalid');
         if (primerError) {
@@ -217,6 +256,18 @@ function enviarFormulario(e) {
         return;
     }
 
+    // 2. Validar reCAPTCHA
+    if (typeof grecaptcha !== 'undefined') {
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            document.getElementById('recaptcha-error').style.display = 'block';
+            return;
+        } else {
+            document.getElementById('recaptcha-error').style.display = 'none';
+        }
+    }
+
+    // 3. Procesar el envío
     const btn = document.getElementById('btn-enviar');
     const loader = document.getElementById('loader-envio');
 
@@ -226,6 +277,10 @@ function enviarFormulario(e) {
     const form = document.getElementById('form-preregistro');
     const fd = new FormData(form);
     fd.append('action', 9);
+
+    if (typeof grecaptcha !== 'undefined') {
+        fd.append('g-recaptcha-response', grecaptcha.getResponse());
+    }
 
     const selectArea = document.getElementById('course_cvecourse');
     if (selectArea && selectArea.selectedIndex >= 0) {
@@ -246,12 +301,19 @@ function enviarFormulario(e) {
                 showStep(4);
             } else {
                 if(btn) btn.disabled = false;
+                if (typeof grecaptcha !== 'undefined') grecaptcha.reset(); 
+                
                 if (data.errores) {
                     let showed = false;
                     Object.entries(data.errores).forEach(function([campo, msg]) {
                         if (campo === 'general') return;
                         const el = document.getElementById(campo);
                         if (el) { setError(campo, msg); showed = true; }
+                        else {
+                            // Buscar si es radio button
+                            const radio = document.querySelector(`input[name="${campo}"]`);
+                            if(radio) { setError(campo, msg); showed = true; }
+                        }
                     });
 
                     const primerError = document.querySelector('.is-invalid');
@@ -273,6 +335,7 @@ function enviarFormulario(e) {
         .catch(function() {
             if (loader) loader.style.display = 'none';
             if(btn) btn.disabled = false;
+            if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
             alert('Error de conexión.');
         });
 }
@@ -304,9 +367,39 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    ['archivo_curp', 'archivo_certificado', 'archivo_acta_examen', 'archivo_titulo_grado', 'archivo_cedula'].forEach(function(id) {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('change', function() { validarArchivo(id); });
+    document.querySelectorAll('input[type="file"]').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const containerEl = document.getElementById('nombre-' + this.id);
+            if (!containerEl) return;
+
+            if (this.objectUrl) { URL.revokeObjectURL(this.objectUrl); }
+
+            if (this.files && this.files.length) {
+                if (!validarArchivo(this.id)) return;
+
+                const file = this.files[0];
+                const ext = file.name.split('.').pop().toLowerCase();
+                const icono = (ext === 'pdf') ? '<i class="fa-solid fa-file-pdf" style="color:var(--error)"></i>' : '<i class="fa-solid fa-file-image" style="color:var(--azul-medio)"></i>';
+                const kb = (file.size / 1024).toFixed(0);
+                
+                this.objectUrl = URL.createObjectURL(file);
+
+                containerEl.innerHTML = `
+                    <div class="file-preview-wrapper">
+                        <a href="${this.objectUrl}" target="_blank" class="file-preview-info" title="${file.name} (Clic para ver)">
+                            ${icono}
+                            <span class="file-name-text">${file.name}</span>
+                            <span class="file-size-text">(${kb} KB)</span>
+                        </a>
+                        <button type="button" class="btn-quitar" onclick="quitarArchivo('${this.id}')" title="Quitar archivo">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                containerEl.innerHTML = '';
+            }
+        });
     });
 
     const fInicioEl = document.getElementById('course_startdate');
@@ -342,26 +435,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ['course_cvecourse', 'expedition_iddegreemodality'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', function() { clearError(id); });
-    });
-
-    document.querySelectorAll('input[type="file"]').forEach(function(input) {
-        input.addEventListener('change', function() {
-            const labelEl = document.getElementById('nombre-' + this.id);
-            if (!labelEl) return;
-            if (this.files && this.files.length) {
-                const file = this.files[0];
-                const ext = file.name.split('.').pop().toLowerCase();
-                const icono = (ext === 'pdf') ? '<i class="fa-solid fa-file-pdf"></i> ' : '<i class="fa-solid fa-file-image"></i> ';
-                const kb = (file.size / 1024).toFixed(0);
-                labelEl.innerHTML = icono + file.name + ' <span style="color:var(--texto-suave)">(' + kb + ' KB)</span>';
-                labelEl.classList.add('tiene-archivo');
-                this.classList.remove('is-invalid');
-                this.closest('.upload-area').classList.remove('is-invalid-file');
-            } else {
-                labelEl.textContent = '';
-                labelEl.classList.remove('tiene-archivo');
-            }
-        });
     });
 
     document.querySelectorAll('.upload-area').forEach(function(area) {

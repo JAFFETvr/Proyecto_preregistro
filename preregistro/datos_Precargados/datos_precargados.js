@@ -6,7 +6,9 @@ const areasInaoep = [
     { id: "5", nombre: "Ciencia y Tecnología del Espacio",   valor: "Ciencia y Tecnologia del Espacio" },
     { id: "6", nombre: "Ciencias y Tecnologías Biomédicas",  valor: "Ciencias y Tecnologias Biomedicas" },
     { id: "7", nombre: "Ciencias y Tecnologías de Seguridad",valor: "Ciencias y Tecnologias de Seguridad" },
-    { id: "8", nombre: "Enseñanza de Ciencias Exactas",      valor: "Ensenanza de Ciencias Exactas" }
+    { id: "8", nombre: "Enseñanza de Ciencias Exactas",      valor: "Ensenanza de Ciencias Exactas" },
+    { id: "9", nombre: "Especialidad en Tecnologias  de Semiconductores",      valor: "Especialidad en Tecnologias  de Semiconductores" }
+
 ];
 
 /*
